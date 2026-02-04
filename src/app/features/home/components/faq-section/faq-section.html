@@ -1,0 +1,48 @@
+<section class="faq-section container my-5">
+
+  <!-- Title -->
+  <h2 class="text-center fw-bold mb-2">
+    Frequently Asked Questions
+  </h2>
+
+  <!-- Subtitle -->
+  <p class="text-center text-muted mb-4">
+    Everything you need to know about our JSON Formatter tool
+  </p>
+
+
+  <div class="faq-list">
+
+    @for (faq of faqs; track $index) {
+
+      <div class="faq-item">
+
+        <!-- Question -->
+        <button
+          class="faq-question"
+          (click)="toggle($index)"
+        >
+          {{ faq.question }}
+
+          <span>
+            {{ activeIndex === $index ? '▲' : '▼' }}
+          </span>
+        </button>
+
+
+        <!-- Answer -->
+        @if (activeIndex === $index) {
+
+          <div class="faq-answer">
+            {{ faq.answer }}
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  </div>
+
+</section>
