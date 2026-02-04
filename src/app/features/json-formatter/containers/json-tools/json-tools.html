@@ -2,51 +2,132 @@
 
   <div class="container">
 
-    <h2 class="text-center mb-4">
+    <!-- Title -->
+    <h2 class="text-center mb-4 fw-bold">
       JSON Formatter
     </h2>
 
     <!-- Toolbar -->
-    <app-json-toolbar
-      (format)="format()"
-      (minify)="minify()"
-      (validate)="validate()"
-      (clear)="clear()"
-      (copy)="copy()"
-      (download)="download()"
-    >
-    </app-json-toolbar>
+    <div class="toolbar-row mb-3">
+
+      <button class="btn btn-primary" (click)="format()">
+        ☰ Format
+      </button>
+
+      <button class="btn btn-light" (click)="minify()">
+        ↘ Minify
+      </button>
+
+      <button class="btn btn-light" (click)="validate()">
+        ✔ Validate
+      </button>
+
+      <button class="btn btn-light" (click)="copy()">
+        📋 Copy
+      </button>
+
+      <button class="btn btn-light" (click)="download()">
+        ⬇ .json
+      </button>
+
+      <button class="btn btn-light" (click)="clear()">
+        🗑 Clear
+      </button>
+
+      <!-- Live Toggle (UI Only for Now) -->
+      <div class="live-toggle ms-auto">
+
+        <span>Live</span>
+
+        <label class="switch ms-2">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row mb-3 text-center text-muted">
+
+      {{ store.input().length }} chars •
+      {{ store.input().split('\n').length }} lines •
+      {{ (store.input().length / 1024).toFixed(2) }} KB
+
+    </div>
 
     <!-- Error -->
     @if (!isValid()) {
-      <div class="alert alert-danger mt-3">
+      <div class="alert alert-danger mb-3">
         {{ error() }}
       </div>
     }
 
-    <div class="row g-3 mt-3">
+    <!-- Editors -->
+    <div class="row g-4">
 
       <!-- Input -->
       <div class="col-12 col-lg-6">
 
-        <app-json-editor
-          label="Input JSON"
-          [value]="store.input()"
-          (valueChange)="store.setInput($event)"
-        >
-        </app-json-editor>
+        <div class="editor-box">
+
+          <div class="editor-title">
+            Input JSON
+          </div>
+
+          <app-json-editor
+            label="Input JSON"
+            placeholder="Paste your JSON here, or drag & drop a .json file..."
+            [value]="store.input()"
+            (valueChange)="store.setInput($event)"
+          >
+          </app-json-editor>
+
+
+        </div>
 
       </div>
 
       <!-- Output -->
       <div class="col-12 col-lg-6">
 
-        <app-json-editor
-          label="Formatted Output"
-          [value]="store.output()"
-          [readonly]="true"
-        >
-        </app-json-editor>
+        <div class="editor-box">
+
+          <div class="editor-title d-flex justify-content-between">
+
+            <span>Formatted Output</span>
+
+            <div class="small-actions">
+
+              <button
+                class="btn btn-sm btn-light"
+                (click)="copy()"
+              >
+                Copy
+              </button>
+
+              <button
+                class="btn btn-sm btn-light"
+                (click)="download()"
+              >
+                .json
+              </button>
+
+            </div>
+
+          </div>
+
+          <app-json-editor
+            label="Formatted Output"
+            placeholder="Formatted output will appear here..."
+            [value]="store.output()"
+            [readonly]="true"
+          >
+          </app-json-editor>
+
+
+        </div>
 
       </div>
 

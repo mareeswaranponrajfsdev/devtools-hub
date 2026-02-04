@@ -1,16 +1,35 @@
-.editor {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.editor-wrapper {
+  width: 100%;
 }
 
 .editor-label {
+  padding: 0.6rem 1rem;
   font-weight: 600;
-  font-size: var(--fs-sm);
+  border-bottom: 1px solid #e3e6ea;
+  background: #f8f9fa;
 }
 
-.json-editor {
-  min-height: 320px;
-  font-family: monospace;
+.json-textarea {
+  width: 100%;
+  min-height: 380px;
+
+  border: none;
   resize: vertical;
+
+  padding: 1rem;
+
+  font-family: Consolas, monospace;
+  font-size: 14px;
+
+  background: #fff;
+  color: #212529;
+}
+
+.json-textarea:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.is-invalid {
+  border-left: 4px solid #dc3545;
 }

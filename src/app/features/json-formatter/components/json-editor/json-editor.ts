@@ -14,6 +14,8 @@ export class JsonEditor {
 
   @Input() value = '';
 
+  @Input() placeholder = '';
+
   @Input() readonly = false;
 
   @Input() isValid = true;

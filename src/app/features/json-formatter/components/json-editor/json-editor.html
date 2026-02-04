@@ -1,18 +1,14 @@
 <div class="editor-wrapper">
 
-  <!-- Label -->
-  <label class="form-label fw-semibold mb-2">
-    {{ label }}
-  </label>
 
   <!-- Textarea -->
   <textarea
     class="form-control json-textarea"
     [class.is-invalid]="!isValid"
     [value]="value"
+    [placeholder]="placeholder"
     [readonly]="readonly"
     (input)="onInput($event)"
-    placeholder="Paste JSON here..."
   >
   </textarea>
 
