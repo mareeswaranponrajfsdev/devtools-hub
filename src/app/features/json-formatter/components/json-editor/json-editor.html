@@ -1,0 +1,27 @@
+<div class="editor-wrapper">
+
+  <!-- Label -->
+  <label class="form-label fw-semibold mb-2">
+    {{ label }}
+  </label>
+
+  <!-- Textarea -->
+  <textarea
+    class="form-control json-textarea"
+    [class.is-invalid]="!isValid"
+    [value]="value"
+    [readonly]="readonly"
+    (input)="onInput($event)"
+    placeholder="Paste JSON here..."
+  >
+  </textarea>
+
+  <!-- Error -->
+  <div
+    *ngIf="!isValid && error"
+    class="invalid-feedback d-block"
+  >
+    {{ error }}
+  </div>
+
+</div>

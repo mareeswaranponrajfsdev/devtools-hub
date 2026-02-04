@@ -1,0 +1,53 @@
+<div class="container py-4">
+
+  <h2 class="text-center mb-4">
+    JSON Formatter
+  </h2>
+
+  <!-- Toolbar -->
+  <app-json-toolbar
+    (format)="store.format()"
+    (minify)="store.minify()"
+    (validate)="store.validate()"
+    (clear)="store.clear()"
+    (copy)="copy()"
+    (download)="download()"
+  >
+  </app-json-toolbar>
+
+  <!-- Error -->
+  @if (!store.isValid()) {
+    <div class="alert alert-danger mt-3">
+      {{ store.error() }}
+    </div>
+  }
+
+  <div class="row g-3 mt-3">
+
+    <!-- Input -->
+    <div class="col-12 col-lg-6">
+
+      <app-json-editor
+        label="Input JSON"
+        [value]="store.input()"
+        (valueChange)="store.setInput($event)"
+      >
+      </app-json-editor>
+
+    </div>
+
+    <!-- Output -->
+    <div class="col-12 col-lg-6">
+
+      <app-json-editor
+        label="Formatted Output"
+        [value]="store.output()"
+        [readonly]="true"
+      >
+      </app-json-editor>
+
+    </div>
+
+  </div>
+
+</div>

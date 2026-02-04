@@ -1,0 +1,16 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.editor-label {
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+.json-editor {
+  min-height: 320px;
+  font-family: monospace;
+  resize: vertical;
+}
