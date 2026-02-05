@@ -1,5 +1,141 @@
 .step-card {
-  background: #fff;
+  background: #fff;/* =====================================
+   HOW TO SECTION – DEVTOOLS HUB
+===================================== */
+
+.howto-section {
+  margin-top: 2rem;
+}
+
+/* =====================================
+   CARD
+===================================== */
+
+.step-card {
+  background: var(--bg-card);
+
+  border: 1px solid var(--border-light);
+
+  border-radius: 14px;
+
+  padding: 2rem 1.6rem;
+
+  text-align: center;
+
+  height: 100%;
+
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover Effect (Soft SaaS Style) */
+.step-card:hover {
+  border-color: var(--primary);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+
+  transform: translateY(-2px);
+}
+
+/* =====================================
+   ICON
+===================================== */
+
+.icon {
+  width: 56px;
+  height: 56px;
+
+  margin: 0 auto 1.2rem;
+
+  background: rgba(13, 162, 231, 0.12);
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Font Awesome Icon */
+.icon i {
+  font-size: 22px;
+
+  color: var(--primary);
+}
+
+/* =====================================
+   TEXT
+===================================== */
+
+.step-title {
+  font-size: 1rem;
+
+  font-weight: 600;
+
+  margin-bottom: 0.5rem;
+
+  color: var(--text-main);
+}
+
+.step-desc {
+  font-size: 0.9rem;
+
+  color: var(--text-muted);
+
+  line-height: 1.6;
+
+  margin: 0;
+
+  max-width: 240px;
+
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =====================================
+   DARK MODE SUPPORT
+===================================== */
+
+[data-theme="dark"] {
+
+  .step-card {
+    background: var(--bg-card);
+
+    border-color: var(--border-light);
+  }
+
+  .icon {
+    background: rgba(56, 189, 248, 0.15);
+  }
+
+}
+
+/* =====================================
+   MOBILE RESPONSIVE
+===================================== */
+
+@media (max-width: 768px) {
+
+  .step-card {
+    padding: 1.6rem 1.3rem;
+  }
+
+  .icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .icon i {
+    font-size: 20px;
+  }
+
+  .step-desc {
+    font-size: 0.85rem;
+  }
+
+}
+
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;

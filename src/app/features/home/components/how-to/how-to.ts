@@ -12,26 +12,27 @@ export class HowTo {
 
   steps = [
     {
-      icon: '📋',
+      icon: 'fa-regular fa-file-lines',
       title: 'Paste or Upload',
-      desc: 'Paste JSON or drag & drop file'
+      desc: 'Paste your JSON directly or drag & drop a .json file into the input area.'
     },
     {
-      icon: '⚙️',
+      icon: 'fa-solid fa-wand-magic-sparkles',
       title: 'Format or Validate',
-      desc: 'Beautify or validate syntax'
+      desc: 'Click Format to beautify, Minify to compress, or Validate to check syntax.'
     },
     {
-      icon: '📥',
+      icon: 'fa-solid fa-clone',
       title: 'Copy or Download',
-      desc: 'Copy or download output'
+      desc: 'Copy the formatted output to clipboard or download as .json or .txt file.'
     },
     {
-      icon: '💾',
+      icon: 'fa-regular fa-bookmark',
       title: 'Save for Later',
-      desc: 'Save JSON locally'
+      desc: 'Use Save to store your JSON locally. Access recent history anytime.'
     }
   ];
+
 
 }
 

@@ -7,11 +7,12 @@ import { FaqSection } from '../../components/faq-section/faq-section';
 import { FooterSection } from '../../components/footer-section/footer-section';
 import { ToolsSection } from '../../components/tools-section/tools-section';
 import { WhyChooseSection } from '../../components/why-choose-section/why-choose-section';
+import { ContactSection } from '../../../contact/pages/contact-section/contact-section';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [RouterLink, JsonTools, HowTo, AboutSection, FaqSection, FooterSection, ToolsSection, WhyChooseSection],
+  imports: [RouterLink, JsonTools, HowTo, AboutSection, FaqSection, FooterSection, ToolsSection, WhyChooseSection, ContactSection],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

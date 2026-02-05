@@ -1,45 +1,81 @@
-<section class="home-hero container text-center">
+<!-- ===============================
+   HERO SECTION (FULL WIDTH BG)
+================================ -->
 
-  <h1 class="hero-title">
-    Free Online JSON Formatter & Validator
-  </h1>
+<section class="hero-wrapper" id="home">
 
-  <p class="hero-subtitle">
-    Format, validate, and minify JSON instantly in your browser.
-  </p>
+  <div class="home-hero container text-center">
 
-  <div class="hero-actions">
+    <h1 class="hero-title">
+      Free Online JSON Formatter & Validator
+    </h1>
 
-    <a
-      routerLink="/json-formatter"
-      class="btn btn-primary btn-lg"
-    >
-      Format JSON
-    </a>
+    <p class="hero-subtitle">
+      Format, validate, minify, and beautify JSON instantly in your browser.
+      Fast, secure, and built for developers.
+    </p>
 
-    <button class="btn btn-outline-secondary btn-lg">
-      Load Sample
-    </button>
+    <!-- Trust Info -->
+    <div class="hero-trust mb-4">
+
+      <span>
+        <i class="fa-solid fa-shield-halved"></i> 100% Free
+      </span>
+
+      <span>
+        <i class="fa-solid fa-lock"></i> No Login
+      </span>
+
+      <span>
+        <i class="fa-solid fa-bolt"></i> Secure & Fast
+      </span>
+
+      <span>
+        <i class="fa-solid fa-globe"></i> Runs in Browser
+      </span>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="hero-actions">
+
+      <a
+        routerLink="/json-formatter"
+        class="btn btn-theme btn-lg"
+      >
+
+        Format JSON
+      </a>
+
+      <button class="btn btn-light btn-lg">
+        Load Sample
+      </button>
+
+      <button class="btn btn-outline-secondary btn-lg">
+        Clear
+      </button>
+
+    </div>
+
+    <!-- Scroll -->
+    <div class="scroll-down mt-4">
+
+      <a href="#tools">
+        Scroll to editor
+        <i class="fa-solid fa-arrow-down"></i>
+      </a>
+
+    </div>
 
   </div>
 
 </section>
 
 
-<!-- AD PLACEHOLDER -->
-<section class="ad-section container my-5 text-center">
+<!-- HOW TO -->
+<section class="container my-5">
 
-  <div class="ad-box">
-    Advertisement
-  </div>
-
-</section>
-
-
-<!-- HOW TO USE -->
-<section class="howto-section container my-5">
-
-  <h3 class="text-center mb-4 fw-bold">
+  <h3 class="text-center fw-bold mb-4">
     How to Use This JSON Formatter
   </h3>
 
@@ -48,47 +84,67 @@
 </section>
 
 
-<!-- SECURITY / INFO BAR -->
-<section class="security-section container my-5">
+<!-- SECURITY BAR -->
+<section class="container my-5">
 
-  <div class="alert alert-success text-center">
+  <div class="trust-bar">
 
-    🔒 Secure &nbsp; • &nbsp;
-    No data sent to server &nbsp; • &nbsp;
-    100% Client-side
+    <span class="trust-item active">
+      <i class="fa-solid fa-lock"></i>
+      Secure
+    </span>
+
+    <span class="divider">|</span>
+
+    <span class="trust-item">
+      <i class="fa-solid fa-server"></i>
+      No data sent to server
+    </span>
+
+    <span class="divider">|</span>
+
+    <span class="trust-item">
+      <i class="fa-solid fa-shield-halved"></i>
+      100% Client-side
+    </span>
 
   </div>
 
 </section>
 
 
-<!-- JSON TOOLS (IMPORTANT: LAST) -->
-<section id="tools" class="tools-section">
+<!-- TOOLS -->
+<section id="tools">
 
   <app-json-tools></app-json-tools>
 
 </section>
 
+
+<!-- about -->
 <section id="about">
 
   <app-about-section></app-about-section>
 
 </section>
 
+<!-- FAQ -->
 <section id="faq">
 
   <app-faq-section></app-faq-section>
 
 </section>
 
+<!-- WHY -->
 <section id="why-use">
 
   <app-why-choose-section></app-why-choose-section>
 
 </section>
 
-<!-- <section id="tools">
+<section id="contact">
 
-  <app-tools-section></app-tools-section>
+  <app-contact-section></app-contact-section>
 
-</section> -->
+</section>
+

@@ -3,7 +3,7 @@
   <div class="container">
 
     <!-- Logo -->
-    <a class="navbar-brand" routerLink="/">
+    <a class="navbar-brand" href="#home">
       DevTools Hub
     </a>
 
@@ -24,9 +24,7 @@
 
         <li class="nav-item">
           <a
-            routerLink="/"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
+            href="#home"
             class="nav-link"
           >
             Home
@@ -35,8 +33,7 @@
 
         <li class="nav-item">
           <a
-            routerLink="/json-formatter"
-            routerLinkActive="active"
+            href="#why-use"
             class="nav-link"
           >
             Tools
@@ -59,11 +56,20 @@
         <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
 
           <button
+            type="button"
             class="btn btn-outline-primary btn-sm theme-btn"
             (click)="toggleTheme()"
+            aria-label="Toggle theme"
           >
-            {{ isDark() ? '☀️' : '🌙' }}
+
+            <i
+              class="fa-solid"
+              [class.fa-moon]="!isDark()"
+              [class.fa-sun]="isDark()"
+            ></i>
+
           </button>
+
 
         </li>
 

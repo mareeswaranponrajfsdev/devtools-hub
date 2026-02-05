@@ -15,18 +15,29 @@
 
     @for (faq of faqs; track $index) {
 
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        [class.active]="activeIndex === $index"
+      >
+
 
         <!-- Question -->
         <button
           class="faq-question"
           (click)="toggle($index)"
         >
-          {{ faq.question }}
+          <span>{{ faq.question }}</span>
 
           <span>
-            {{ activeIndex === $index ? '▲' : '▼' }}
+
+            <i
+              class="fa-solid"
+              [class.fa-chevron-up]="activeIndex === $index"
+              [class.fa-chevron-down]="activeIndex !== $index"
+            ></i>
+
           </span>
+
         </button>
 
 
