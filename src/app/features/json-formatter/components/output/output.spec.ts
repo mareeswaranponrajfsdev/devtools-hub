@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JsonToolbar } from './json-toolbar';
+import { Output } from './output';
 
-describe('JsonToolbar', () => {
-  let component: JsonToolbar;
-  let fixture: ComponentFixture<JsonToolbar>;
+describe('Output', () => {
+  let component: Output;
+  let fixture: ComponentFixture<Output>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JsonToolbar]
+      imports: [Output]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(JsonToolbar);
+    fixture = TestBed.createComponent(Output);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

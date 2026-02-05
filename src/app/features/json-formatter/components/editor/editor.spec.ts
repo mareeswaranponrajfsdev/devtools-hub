@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JsonEditor } from './json-editor';
+import { Editor } from './editor';
 
-describe('JsonEditor', () => {
-  let component: JsonEditor;
-  let fixture: ComponentFixture<JsonEditor>;
+describe('Editor', () => {
+  let component: Editor;
+  let fixture: ComponentFixture<Editor>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JsonEditor]
+      imports: [Editor]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(JsonEditor);
+    fixture = TestBed.createComponent(Editor);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

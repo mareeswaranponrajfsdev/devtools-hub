@@ -1,51 +1,33 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+} from '@angular/core';
 
-import { JsonFormatterStore } from '../../state/json-formatter.store';
-import { JsonEditor } from '../../components/json-editor/json-editor';
-import { JsonToolbar } from '../../components/json-toolbar/json-toolbar';
+import { JsonFormatterStore } from '../../state/json-formatter.store.store';
+
+import { Editor } from '../../components/editor/editor';
+import { Toolbar } from '../../components/toolbar/toolbar';
 
 @Component({
   selector: 'app-json-formatter-page',
   standalone: true,
+
   imports: [
-    CommonModule,
-    JsonEditor,
-    JsonToolbar
+    Editor,
+    Toolbar,
   ],
-  templateUrl: './json-formatter-page.html'
+
+  providers: [JsonFormatterStore],
+
+  templateUrl: './json-formatter-page.html',
+  styleUrl: './json-formatter-page.scss',
+
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JsonFormatterPage {
 
-  // Inject store
-  readonly store = inject(JsonFormatterStore);
+  constructor(
+    public readonly store: JsonFormatterStore
+  ) {}
 
-  /* ================= COPY ================= */
-
-  copy(): void {
-    navigator.clipboard.writeText(
-      this.store.output()
-    );
-  }
-
-  /* ================= DOWNLOAD ================= */
-
-  download(): void {
-
-    if (!this.store.output()) return;
-
-    const blob = new Blob(
-      [this.store.output()],
-      { type: 'application/json' }
-    );
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'formatted.json';
-    link.click();
-
-    URL.revokeObjectURL(url);
-  }
 }
