@@ -1,0 +1,89 @@
+.faq-section {
+  max-width: 900px;
+}
+
+
+/* Wrapper */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+/* Card */
+.faq-item {
+  border: 1px solid #e5ecf4;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+
+/* Question */
+.faq-question {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 16px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  cursor: pointer;
+}
+
+
+/* Answer */
+.faq-answer {
+  padding: 0 20px 16px;
+
+  color: #5f6c7b;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+
+/* =====================================
+   FAQ HOVER – SHADOW ONLY
+===================================== */
+
+/* Hover effect */
+.faq-item:hover {
+  border-color: var(--border-light);
+
+  background: #fff;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Icon subtle highlight */
+.faq-item:hover i {
+  color: var(--primary);
+}
+
+/* =====================================
+   ACTIVE (OPEN) STATE
+===================================== */
+
+.faq-item.active {
+  background: #fff;
+
+  border-color: var(--primary);
+
+  box-shadow: 0 4px 16px rgba(13, 162, 231, 0.15);
+}
+
+/* Active question */
+.faq-item.active .faq-question {
+  color: var(--primary);
+}
+
+/* Active icon */
+.faq-item.active i {
+  color: var(--primary);
+}

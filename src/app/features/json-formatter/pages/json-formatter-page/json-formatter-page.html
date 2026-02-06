@@ -1,0 +1,146 @@
+<div class="container py-3">
+
+  <!-- Toolbar -->
+  <app-json-toolbar
+    [live]="store.liveMode()"
+    [disabled]="!store.input()"
+
+    (format)="store.format()"
+    (minify)="store.minify()"
+    (validate)="store.validate()"
+    (clear)="store.clear()"
+    (copy)="store.copy()"
+    (toggleLive)="store.toggleLive()"
+    (sample)="loadSample()">
+  </app-json-toolbar>
+
+
+  <!-- Editors -->
+  <div class="row g-3 mt-2">
+    <!-- Message -->
+    @if (store.error()) {
+
+      <div
+        class="alert mt-3"
+        [class.alert-success]="store.error()?.includes('Valid')"
+        [class.alert-danger]="!store.error()?.includes('Valid')">
+
+        <i
+          class="fa-solid me-2"
+          [class.fa-circle-check]="store.error()?.includes('Valid')"
+          [class.fa-circle-exclamation]="!store.error()?.includes('Valid')">
+        </i>
+
+        {{ store.error() }}
+
+      </div>
+
+    }
+
+
+    <!-- INPUT -->
+    <div class="col-12 col-lg-6">
+
+      <div class="editor-card">
+
+        <!-- HEADER -->
+        <div class="editor-header">
+
+          <h6 class="editor-title">Input JSON</h6>
+
+          <div class="stats-inline">
+            <span>{{ store.charCount() }} chars</span>
+            <span>•</span>
+            <span>{{ store.lineCount() }} lines</span>
+            <span>•</span>
+            <span>{{ store.fileSize() }} KB</span>
+          </div>
+
+        </div>
+
+
+        <app-json-editor
+          [value]="store.input()"
+          placeholder="Paste your JSON here, or drag & drop a .json file..."
+          (valueChange)="store.setInput($event)">
+        </app-json-editor>
+
+      </div>
+
+    </div>
+
+
+    <!-- OUTPUT -->
+    <div class="col-12 col-lg-6">
+
+      <div class="editor-card">
+
+        <!-- HEADER -->
+        <div class="editor-header">
+
+          <h6 class="editor-title">Formatted Output</h6>
+
+          <div class="output-actions">
+
+            <button
+              class="action-btn"
+              type="button"
+              [class.copied]="copied"
+              [disabled]="!store.output()"
+              (click)="copyOutput()">
+
+              <i
+                class="fa-solid"
+                [class.fa-copy]="!copied"
+                [class.fa-circle-check]="copied">
+              </i>
+
+              {{ copied ? 'Copied' : 'Copy' }}
+
+            </button>
+
+
+            <!-- Download JSON -->
+            <button
+              class="action-btn"
+              type="button"
+              [disabled]="!store.output()"
+              (click)="downloadJson()">
+
+              <i class="fa-solid fa-download"></i>
+              .json
+
+            </button>
+
+
+            <!-- Download TXT -->
+            <button
+              class="action-btn"
+              type="button"
+              [disabled]="!store.output()"
+              (click)="downloadTxt()">
+
+              <i class="fa-regular fa-file-lines"></i>
+              .txt
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <app-json-editor
+          [value]="store.output()"
+          >
+        </app-json-editor>
+
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+</div>

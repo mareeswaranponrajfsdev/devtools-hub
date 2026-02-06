@@ -1,0 +1,109 @@
+/* Main Section */
+.contact-section {
+  max-width: 750px;
+}
+
+
+/* Icon Top */
+.contact-icon {
+  width: 64px;
+  height: 64px;
+
+  background: #e9f5ff;
+  color: var(--primary);
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 16px;
+
+  font-size: 24px;
+}
+
+
+/* Card */
+.contact-card {
+  background: #fff;
+
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+
+  padding: 28px;
+
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* Labels */
+label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+
+/* Required Star */
+.req {
+  color: #ef4444;
+}
+
+
+/* Inputs */
+.form-control {
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+
+  padding: 10px 12px;
+
+  font-size: 14px;
+}
+
+
+/* Focus */
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(13, 162, 231, 0.15);
+}
+
+
+/* Error */
+.error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+
+/* Invalid Border */
+.form-control.ng-touched.ng-invalid {
+  border-color: #ef4444;
+}
+
+
+/* Button */
+.btn-theme {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px;
+
+  font-weight: 600;
+}
+
+
+.btn-theme:hover {
+  background: var(--primary-dark);
+}
+
+
+/* Disabled */
+.btn-theme:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

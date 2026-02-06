@@ -1,0 +1,34 @@
+.legal {
+  max-width: 900px;
+}
+
+.legal-card {
+  background: #fff;
+
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+
+  padding: 32px;
+
+  box-shadow: var(--shadow-sm);
+
+  line-height: 1.7;
+}
+
+.legal-card h4 {
+  margin-top: 24px;
+  font-weight: 600;
+}
+
+.legal-card p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+[data-theme="dark"] {
+
+  .legal-card {
+    background: var(--bg-card);
+  }
+
+}
