@@ -1,7 +1,20 @@
-<textarea
-  class="json-editor form-control"
-  [value]="value"
-  [placeholder]="placeholder"
-  (input)="onInput($event)"
-  rows="18">
-</textarea>
+<div class="editor-container">
+
+  <!-- Line Numbers -->
+  <div class="line-numbers" #lines>
+    @for (n of lineNumbers; track n) {
+      <span>{{ n }}</span>
+    }
+  </div>
+
+  <!-- Textarea -->
+  <textarea
+    #textarea
+    class="json-editor form-control"
+    [value]="value"
+    [placeholder]="placeholder"
+    (input)="onInput($event)"
+    (scroll)="syncScroll(textarea, lines)">
+  </textarea>
+
+</div>

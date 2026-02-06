@@ -30,13 +30,21 @@
       Validate
     </button>
 
-    <button
+    <!-- <button
       class="tool-btn"
       (click)="copy.emit()"
       [disabled]="disabled">
 
       <i class="fa-regular fa-copy"></i>
       Copy
+    </button> -->
+
+    <button
+      class="tool-btn"
+      type="button"
+      (click)="sample.emit()">
+      <i class="fa-solid fa-flask"></i>
+      Sample
     </button>
 
     <button
@@ -51,7 +59,7 @@
 
 
   <!-- Right Toggle -->
-  <div class="toolbar-right">
+  <div class="toolbar-right tooltip-wrapper">
 
     <span class="live-label">
       Live
@@ -68,6 +76,13 @@
 
     </label>
 
+
+    <!-- Tooltip -->
+    <span class="tooltip-text">
+      Enable live validation while typing
+    </span>
+
   </div>
+
 
 </div>

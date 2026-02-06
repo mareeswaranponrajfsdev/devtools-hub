@@ -34,7 +34,6 @@
   border-radius: 8px;
   border: 1px solid transparent;
 
-  background: #f1f5f9;
   color: #334155;
 
   font-size: 14px;
@@ -42,6 +41,10 @@
 
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.tool-btn.primary {
+  background: var(--primary) !important;
 }
 
 
@@ -104,6 +107,8 @@
   position: relative;
   width: 42px;
   height: 22px;
+  cursor: pointer;
+
 }
 
 .switch input {
@@ -139,9 +144,74 @@
 
 /* Checked */
 .switch input:checked + .slider {
-  background: #0d6efd;
+  background: var(--primary);
 }
 
 .switch input:checked + .slider::before {
   transform: translateX(20px);
+}
+
+/* ===============================
+   TOOLTIP
+=============================== */
+
+.tooltip-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tooltip-text {
+  position: absolute;
+
+  bottom: 130%; /* Above switch */
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  padding: 6px 10px;
+  border-radius: 6px;
+
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition: all 0.15s ease;
+  z-index: 1000;
+}
+
+
+/* Arrow */
+
+.tooltip-text::after {
+  content: '';
+
+  position: absolute;
+
+  top: 100%;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-width: 6px;
+  border-style: solid;
+
+  border-color: #111827 transparent transparent transparent;
+}
+
+
+/* Show on Hover */
+
+.tooltip-wrapper:hover .tooltip-text {
+  opacity: 1;
+  visibility: visible;
 }

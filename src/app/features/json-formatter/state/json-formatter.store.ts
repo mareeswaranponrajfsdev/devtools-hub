@@ -95,19 +95,36 @@ export class JsonFormatterStore {
 
 
   // -------- Validate --------
-  validate() {
+  validate(): void {
 
-    const res = this.engine.validate(this.input());
+    const input = this.input().trim();
 
-    if (res.valid) {
+    if (!input) {
+      this.error.set('Please enter JSON first');
+      return;
+    }
 
-      this.error.set(null);
+    try {
 
-    } else {
+      JSON.parse(input);
 
-      this.error.set(res.error || 'Invalid JSON');
+      this.error.set('JSON is Valid');
+
+      this.autoClearMessage();
+
+    } catch (err: any) {
+
+      this.error.set('Invalid JSON: ' + err.message);
 
     }
+
+  }
+
+  private autoClearMessage(): void {
+
+    setTimeout(() => {
+      this.error.set(null);
+    }, 2000);
 
   }
 

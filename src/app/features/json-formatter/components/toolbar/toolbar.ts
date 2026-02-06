@@ -27,5 +27,6 @@ export class Toolbar {
   @Output() clear = new EventEmitter<void>();
   @Output() copy = new EventEmitter<void>();
   @Output() toggleLive = new EventEmitter<void>();
+  @Output() sample = new EventEmitter<void>();
 
 }

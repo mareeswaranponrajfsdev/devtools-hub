@@ -8,73 +8,43 @@
   padding-right: 12px;
 }
 
-/* =====================================================
-   TOOLBAR (If Needed)
-===================================================== */
-
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-/* =====================================================
-   STATS BAR
-===================================================== */
-
-.stats-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-
-  font-size: 13px;
-  font-weight: 500;
-  color: #6b7280;
-
-  margin: 10px 0 18px;
-}
 
 /* =====================================================
    EDITOR ROW
 ===================================================== */
 
 .row {
-  min-height: 70vh; /* Make editors tall */
+  min-height: 70vh;
 }
+
 
 /* =====================================================
    EDITOR CARD
 ===================================================== */
 
 .editor-card {
-  background: #ffffff;
+    height: 100%;
 
-  border: 1px solid #e3edf7;
-  border-radius: 16px;
-
-  padding: 14px 14px 12px;
-
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  transition: all 0.2s ease;
-
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
+
 
 /* Hover Effect */
-.editor-card:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  transform: translateY(-1px);
-}
+
+
+
 
 /* =====================================================
-   TITLES
+   HEADER (TITLE + STATS)
 ===================================================== */
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  margin-bottom: 8px;
+}
 
 .editor-title {
   font-size: 14px;
@@ -82,8 +52,20 @@
 
   color: #111827;
 
-  margin-bottom: 8px;
+  margin: 0;
 }
+
+.stats-inline {
+  display: flex;
+  gap: 6px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+
+  white-space: nowrap;
+}
+
 
 /* =====================================================
    EDITOR CONTAINERS
@@ -91,9 +73,10 @@
 
 app-json-editor,
 .json-output {
-  flex: 1; /* Fill card height */
+  flex: 1;
   width: 100%;
 }
+
 
 /* =====================================================
    TEXTAREA (INPUT + OUTPUT)
@@ -125,7 +108,9 @@ app-json-editor textarea {
   transition: all 0.15s ease;
 }
 
+
 /* Focus */
+
 textarea:focus {
   border-color: #0d6efd;
 
@@ -134,10 +119,13 @@ textarea:focus {
   background: #ffffff;
 }
 
+
 /* Placeholder */
+
 textarea::placeholder {
   color: #9ca3af;
 }
+
 
 /* =====================================================
    OUTPUT BOX
@@ -148,6 +136,7 @@ textarea::placeholder {
   cursor: default;
 }
 
+
 /* =====================================================
    ERROR ALERT
 ===================================================== */
@@ -157,8 +146,9 @@ textarea::placeholder {
   font-size: 14px;
 }
 
+
 /* =====================================================
-   SCROLLBAR (Modern Look)
+   SCROLLBAR (MODERN)
 ===================================================== */
 
 textarea::-webkit-scrollbar {
@@ -178,6 +168,7 @@ textarea::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
+
 /* =====================================================
    MOBILE RESPONSIVE
 ===================================================== */
@@ -195,8 +186,8 @@ textarea::-webkit-scrollbar-thumb:hover {
   textarea {
     min-height: 260px;
   }
-
 }
+
 
 @media (max-width: 576px) {
 
@@ -209,4 +200,46 @@ textarea::-webkit-scrollbar-thumb:hover {
     padding: 12px;
   }
 
+}
+
+/* =====================================================
+   OUTPUT ACTION BUTTONS
+===================================================== */
+
+.output-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  background: transparent;
+  border: none;
+
+  color: #6b7280;
+
+  cursor: pointer;
+
+  padding: 2px 4px;
+
+  transition: color 0.15s ease;
+}
+
+.action-btn:hover:not(:disabled) {
+  color: #0d6efd;
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.action-btn.copied {
+  color: #16a34a; /* green */
 }
