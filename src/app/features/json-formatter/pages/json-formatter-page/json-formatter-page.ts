@@ -3,7 +3,7 @@ import {
   Component,
 } from '@angular/core';
 
-import { JsonFormatterStore } from '../../state/json-formatter.store.store';
+import { JsonFormatterStore } from '../../state/json-formatter.store';
 
 import { Editor } from '../../components/editor/editor';
 import { Toolbar } from '../../components/toolbar/toolbar';
