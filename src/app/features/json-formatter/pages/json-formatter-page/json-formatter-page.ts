@@ -31,10 +31,11 @@ export class JsonFormatterPage implements OnDestroy {
   copied = false;
 
   private copyTimer: any = null;
+  
 
   constructor(
     public readonly store: JsonFormatterStore,
-    private cdr: ChangeDetectorRef   // ✅ IMPORTANT
+    private cdr: ChangeDetectorRef   
   ) {}
 
 

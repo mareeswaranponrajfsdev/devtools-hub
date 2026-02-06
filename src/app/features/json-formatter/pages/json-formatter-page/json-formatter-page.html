@@ -129,12 +129,12 @@
 
         </div>
 
-        <textarea
-          class="json-output"
-          readonly
-          placeholder="Formatted output will appear here..."
-          [value]="store.output()">
-        </textarea>
+
+        <app-json-editor
+          [value]="store.output()"
+          >
+        </app-json-editor>
+
 
       </div>
 
