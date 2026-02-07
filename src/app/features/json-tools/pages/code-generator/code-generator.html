@@ -1,0 +1,171 @@
+<div class="container my-5">
+  
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold mb-3">JSON to Code Generator</h1>
+    <p class="text-muted">
+      Convert JSON data to C#, TypeScript, or Java classes instantly
+    </p>
+  </div>
+
+  <!-- Language Selection Tabs -->
+  <div class="language-tabs mb-4">
+    <button 
+      *ngFor="let lang of languages" 
+      type="button"
+      class="lang-btn"
+      [class.active]="language() === lang.value"
+      (click)="language.set(lang.value)">
+      <i [class]="lang.icon"></i>
+      {{ lang.label }}
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row g-4">
+    
+    <!-- Left: JSON Input -->
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fa-solid fa-code me-2"></i>
+            JSON Input
+          </h5>
+        </div>
+        <div class="card-body d-flex flex-column">
+          
+          <!-- Class Name Input -->
+          <div class="mb-3">
+            <label class="form-label">Class/Interface Name</label>
+            <input 
+              type="text" 
+              class="form-control"
+              [(ngModel)]="className"
+              placeholder="e.g., User, Product, Order">
+          </div>
+
+          <!-- JSON Textarea -->
+          <div class="flex-grow-1 mb-3">
+            <label class="form-label">JSON Data</label>
+            <textarea 
+              class="form-control h-100 code-input"
+              [(ngModel)]="jsonInput"
+              placeholder='Paste your JSON here, e.g.:
+{
+  "id": 1,
+  "name": "John Doe",
+  "email": "john@example.com",
+  "isActive": true
+}'
+              rows="15"></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex gap-2">
+            <button 
+              type="button"
+              class="btn btn-primary flex-grow-1"
+              (click)="generateCode()">
+              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+              Generate Code
+            </button>
+            <button 
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="loadSample()">
+              <i class="fa-solid fa-file-code me-2"></i>
+              Sample
+            </button>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="error()" class="alert alert-danger mt-3 mb-0">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            {{ error() }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Generated Code Output -->
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="fa-solid fa-file-code me-2"></i>
+            Generated {{ language() === 'csharp' ? 'C#' : language() === 'typescript' ? 'TypeScript' : 'Java' }} Code
+          </h5>
+          <button 
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            [disabled]="!generatedCode()"
+            (click)="copyCode()">
+            <i class="fa-solid fa-copy me-1"></i>
+            Copy
+          </button>
+        </div>
+        <div class="card-body">
+          
+          <!-- Generated Code Display -->
+          <div *ngIf="generatedCode(); else noCode" class="code-output-wrapper">
+            <pre class="code-output"><code>{{ generatedCode() }}</code></pre>
+          </div>
+
+          <!-- No Code Placeholder -->
+          <ng-template #noCode>
+            <div class="empty-state">
+              <i class="fa-solid fa-code-branch fa-3x mb-3 text-muted"></i>
+              <p class="text-muted">
+                Generated code will appear here
+              </p>
+              <small class="text-muted">
+                Enter JSON and click "Generate Code"
+              </small>
+            </div>
+          </ng-template>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Features Info -->
+  <div class="row mt-5">
+    <div class="col-md-4 mb-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <h6 class="fw-bold">Instant Generation</h6>
+        <p class="text-muted small mb-0">
+          Convert JSON to code in milliseconds
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <h6 class="fw-bold">Smart Type Inference</h6>
+        <p class="text-muted small mb-0">
+          Automatically detects data types
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-code"></i>
+        </div>
+        <h6 class="fw-bold">Multiple Languages</h6>
+        <p class="text-muted small mb-0">
+          C#, TypeScript, and Java support
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
