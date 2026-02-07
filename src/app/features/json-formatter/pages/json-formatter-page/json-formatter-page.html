@@ -3,6 +3,7 @@
   <!-- Toolbar -->
   <app-json-toolbar
     [live]="store.liveMode()"
+    [treeView]="store.treeView()"
     [disabled]="!store.input()"
 
     (format)="store.format()"
@@ -11,24 +12,27 @@
     (clear)="store.clear()"
     (copy)="store.copy()"
     (toggleLive)="store.toggleLive()"
-    (sample)="loadSample()">
+    (toggleTree)="store.toggleTreeView()"
+    (sample)="loadSample()"
+    (autoFix)="store.autoFixJson()">
   </app-json-toolbar>
 
 
   <!-- Editors -->
   <div class="row g-3 mt-2">
+    
     <!-- Message -->
     @if (store.error()) {
 
       <div
         class="alert mt-3"
-        [class.alert-success]="store.error()?.includes('Valid')"
-        [class.alert-danger]="!store.error()?.includes('Valid')">
+        [class.alert-success]="store.error()?.includes('Valid') || store.error()?.includes('auto-fixed')"
+        [class.alert-danger]="!store.error()?.includes('Valid') && !store.error()?.includes('auto-fixed')">
 
         <i
           class="fa-solid me-2"
-          [class.fa-circle-check]="store.error()?.includes('Valid')"
-          [class.fa-circle-exclamation]="!store.error()?.includes('Valid')">
+          [class.fa-circle-check]="store.error()?.includes('Valid') || store.error()?.includes('auto-fixed')"
+          [class.fa-circle-exclamation]="!store.error()?.includes('Valid') && !store.error()?.includes('auto-fixed')">
         </i>
 
         {{ store.error() }}
@@ -73,14 +77,30 @@
     <!-- OUTPUT -->
     <div class="col-12 col-lg-6">
 
-      <div class="editor-card">
+      <div class="editor-card" #outputContainer>
 
         <!-- HEADER -->
         <div class="editor-header">
 
-          <h6 class="editor-title">Formatted Output</h6>
+          <h6 class="editor-title">
+            {{ store.treeView() ? 'Tree View' : 'Formatted Output' }}
+          </h6>
 
           <div class="output-actions">
+
+            <button
+              class="action-btn fullscreen-btn"
+              type="button"
+              (click)="toggleFullscreen()"
+              [title]="isFullscreen ? 'Exit Fullscreen (ESC)' : 'Enter Fullscreen'"
+            >
+              <i
+                class="fa-solid"
+                [class.fa-expand]="!isFullscreen"
+                [class.fa-compress]="isFullscreen"
+              ></i>
+              {{ isFullscreen ? 'Minimize' : 'Fullscreen' }}
+            </button>
 
             <button
               class="action-btn"
@@ -130,10 +150,26 @@
         </div>
 
 
-        <app-json-editor
-          [value]="store.output()"
-          >
-        </app-json-editor>
+        <div class="output-wrapper">
+
+          @if (store.treeView()) {
+
+            <!-- Tree View -->
+            <app-json-tree
+              [jsonString]="store.output()">
+            </app-json-tree>
+
+          } @else {
+
+            <!-- Normal Editor -->
+            <app-json-editor
+              [value]="store.output()">
+            </app-json-editor>
+
+          }
+
+        </div>
+
 
 
       </div>

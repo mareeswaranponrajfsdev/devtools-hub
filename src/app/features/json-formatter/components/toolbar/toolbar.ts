@@ -21,12 +21,17 @@ export class Toolbar {
   @Input()
   disabled = false;
 
+  @Input()
+  treeView = false;
+
   @Output() format = new EventEmitter<void>();
   @Output() minify = new EventEmitter<void>();
   @Output() validate = new EventEmitter<void>();
   @Output() clear = new EventEmitter<void>();
   @Output() copy = new EventEmitter<void>();
   @Output() toggleLive = new EventEmitter<void>();
+  @Output() toggleTree = new EventEmitter<void>();
   @Output() sample = new EventEmitter<void>();
+  @Output() autoFix = new EventEmitter<void>();
 
 }

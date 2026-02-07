@@ -30,14 +30,26 @@
       Validate
     </button>
 
-    <!-- <button
-      class="tool-btn"
-      (click)="copy.emit()"
-      [disabled]="disabled">
+    <button
+      class="tool-btn success"
+      (click)="autoFix.emit()"
+      [disabled]="disabled"
+      title="Auto-fix common JSON errors">
 
-      <i class="fa-regular fa-copy"></i>
-      Copy
-    </button> -->
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      Auto Fix
+    </button>
+
+    <button
+      class="tool-btn"
+      [class.active]="treeView"
+      (click)="toggleTree.emit()"
+      [disabled]="disabled"
+      title="Toggle tree view">
+
+      <i class="fa-solid fa-sitemap"></i>
+      Tree View
+    </button>
 
     <button
       class="tool-btn"
