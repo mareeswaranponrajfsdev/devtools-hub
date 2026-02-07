@@ -76,30 +76,6 @@
         </div>
 
 
-        <!-- SUBJECT -->
-        <div class="col-12">
-
-          <label>
-            Subject <span class="req">*</span>
-          </label>
-
-          <input
-            type="text"
-            class="form-control"
-            placeholder="What's this about?"
-            formControlName="subject"
-          />
-
-          <small
-            class="error"
-            *ngIf="f['subject'].touched && f['subject'].invalid"
-          >
-            Subject required
-          </small>
-
-        </div>
-
-
         <!-- MESSAGE -->
         <div class="col-12">
 

@@ -58,11 +58,6 @@ export class ContactSection implements OnInit {
         ]
       ],
 
-      subject: [
-        '',
-        [Validators.required, Validators.minLength(3)]
-      ],
-
       message: [
         '',
         [Validators.required, Validators.minLength(10)]
@@ -99,8 +94,8 @@ export class ContactSection implements OnInit {
     const params = {
       name: data.name,
       email: data.email,
-      subject: data.subject,
       message: data.message,
+      subject: 'Contact Form Submission', // Default subject
       date: new Date().toLocaleString()
     };
 
