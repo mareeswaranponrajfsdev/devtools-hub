@@ -2,13 +2,18 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 
 import { JsonFormatterStore } from '../../state/json-formatter.store';
 
 import { Editor } from '../../components/editor/editor';
 import { Toolbar } from '../../components/toolbar/toolbar';
+import { TreeView } from '../../components/tree-view/tree-view';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-json-formatter-page',
@@ -17,6 +22,8 @@ import { Toolbar } from '../../components/toolbar/toolbar';
   imports: [
     Editor,
     Toolbar,
+    TreeView,
+    CommonModule 
   ],
 
   providers: [JsonFormatterStore],
@@ -26,17 +33,45 @@ import { Toolbar } from '../../components/toolbar/toolbar';
 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class JsonFormatterPage implements OnDestroy {
+export class JsonFormatterPage implements OnDestroy, OnInit {
 
   copied = false;
 
   private copyTimer: any = null;
+
+  @ViewChild('outputContainer') outputContainer!: ElementRef;
+
+  isFullscreen = false;
+
   
 
   constructor(
     public readonly store: JsonFormatterStore,
     private cdr: ChangeDetectorRef   
   ) {}
+
+  ngOnInit() {
+    document.addEventListener('fullscreenchange', () => {
+      this.isFullscreen = !!document.fullscreenElement;
+      this.cdr.markForCheck();
+    });
+  }
+
+
+  toggleFullscreen() {
+    const elem = this.outputContainer.nativeElement;
+
+    if (!this.isFullscreen) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
 
 
   /* ===============================
@@ -152,34 +187,34 @@ export class JsonFormatterPage implements OnDestroy {
   loadSample(): void {
 
     const sampleJson = `{
-    "requestId": "REQ-10001",
-    "status": "success",
-    "timestamp": "2026-02-06T12:00:00Z",
-    "data": {
-      "user": {
-        "id": 1,
-        "username": "test",
-        "email": "test@example.com",
-        "mobile": "+91-9000000000",
-        "active": true
+      "requestId": "REQ-10001",
+      "status": "success",
+      "timestamp": "2026-02-06T12:00:00Z",
+      "data": {
+        "user": {
+          "id": 1,
+          "username": "test",
+          "email": "test@example.com",
+          "mobile": "+91-9000000000",
+          "active": true
+        },
+        "profile": {
+          "role": "User",
+          "department": "Engineering",
+          "location": "India"
+        },
+        "settings": {
+          "notifications": true,
+          "theme": "light",
+          "language": "en"
+        }
       },
-      "profile": {
-        "role": "User",
-        "department": "Engineering",
-        "location": "India"
-      },
-      "settings": {
-        "notifications": true,
-        "theme": "light",
-        "language": "en"
+      "meta": {
+        "version": "1.0",
+        "source": "api",
+        "responseTimeMs": 95
       }
-    },
-    "meta": {
-      "version": "1.0",
-      "source": "api",
-      "responseTimeMs": 95
-    }
-  }`;
+    }`;
 
     this.store.setInput(sampleJson);
 

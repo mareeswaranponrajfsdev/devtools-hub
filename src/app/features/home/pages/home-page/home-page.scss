@@ -43,20 +43,7 @@
    TRUST LINE
 ================================ */
 
-.hero-trust {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
 
-  font-size: 0.95rem;
-  color: #475569;
-}
-
-.hero-trust i {
-  color: #22c55e;
-  margin-right: 4px;
-}
 
 
 /* ===============================
@@ -111,20 +98,7 @@
   color: var(--text-muted);
 }
 
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-weight: 500;
-}
 
-.trust-item.active {
-  color: var(--success);
-}
-
-.trust-item i {
-  font-size: 0.9rem;
-}
 
 .divider {
   color: var(--border-medium);

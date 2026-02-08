@@ -1,0 +1,203 @@
+<div class="container my-2">
+  
+  <!-- Header -->
+  <div class="text-center mb-3">
+    <h1 class="fw-bold mb-3">JSON Schema Validator</h1>
+    <p class="text-muted">
+      Validate JSON data against JSON Schema and auto-generate schemas
+    </p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="d-flex gap-2 mb-4 justify-content-center flex-wrap">
+    <button 
+      type="button"
+      class="btn btn-primary"
+      (click)="validate()">
+      <i class="fa-solid fa-check-circle me-2"></i>
+      Validate JSON
+    </button>
+    <button 
+      type="button"
+      class="btn btn-success"
+      (click)="generateSchema()">
+      <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+      Generate Schema
+    </button>
+    <button 
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="loadSample()">
+      <i class="fa-solid fa-file-code me-2"></i>
+      Load Sample
+    </button>
+    <button 
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="clear()">
+      <i class="fa-solid fa-trash me-2"></i>
+      Clear All
+    </button>
+  </div>
+
+  <!-- Validation Result -->
+  <div *ngIf="validationResult() === 'valid'" class="alert alert-success mb-4">
+    <i class="fa-solid fa-check-circle me-2"></i>
+    <strong>Valid!</strong> JSON data matches the schema perfectly.
+  </div>
+
+  <div *ngIf="validationResult() === 'invalid'" class="alert alert-danger mb-4">
+    <i class="fa-solid fa-times-circle me-2"></i>
+    <strong>Invalid!</strong> Found {{ errors().length }} validation error(s).
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage()" class="alert alert-warning mb-4">
+    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+    {{ errorMessage() }}
+  </div>
+
+  <!-- Side-by-Side Editors -->
+  <div class="row g-4 mb-4">
+    
+    <!-- JSON Data -->
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fa-solid fa-code me-2"></i>
+            JSON Data
+          </h5>
+        </div>
+        <div class="card-body">
+          <textarea 
+            class="form-control code-input"
+            [(ngModel)]="jsonInput"
+            placeholder='Enter your JSON data here...
+{
+  "name": "John Doe",
+  "age": 30,
+  "email": "john@example.com"
+}'
+            rows="20"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSON Schema -->
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fa-solid fa-file-contract me-2"></i>
+            JSON Schema
+          </h5>
+        </div>
+        <div class="card-body">
+          <textarea 
+            class="form-control code-input"
+            [(ngModel)]="schemaInput"
+            placeholder='Enter or generate JSON Schema...
+{
+  "type": "object",
+  "properties": {
+    "name": {"type": "string"},
+    "age": {"type": "number"}
+  },
+  "required": ["name"]
+}'
+            rows="20"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Validation Errors -->
+  <div *ngIf="errors().length > 0" class="card">
+    <div class="card-header bg-danger text-white">
+      <h5 class="mb-0">
+        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+        Validation Errors ({{ errors().length }})
+      </h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 error-table">
+          <thead>
+            <tr>
+              <th>Path</th>
+              <th>Error Message</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let error of errors()">
+              <td class="path-cell">
+                <code>{{ error.path }}</code>
+              </td>
+              <td class="message-cell">
+                <i class="fa-solid fa-circle-exclamation text-danger me-2"></i>
+                {{ error.message }}
+              </td>
+              <td class="value-cell">
+                <code *ngIf="error.value !== undefined">{{ error.value }}</code>
+                <span *ngIf="error.value === undefined" class="text-muted">-</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Info -->
+  <div class="row mt-5">
+    <div class="col-md-3 mb-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+
+        </div>
+        <h6 class="fw-bold">Schema Validation</h6>
+        <p class="text-muted small mb-0">
+          Validate JSON against schemas
+        </p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <h6 class="fw-bold">Auto-Generate Schema</h6>
+        <p class="text-muted small mb-0">
+          Create schemas from JSON
+        </p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-list-check"></i>
+        </div>
+        <h6 class="fw-bold">Detailed Errors</h6>
+        <p class="text-muted small mb-0">
+          Clear validation messages
+        </p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <h6 class="fw-bold">Real-time</h6>
+        <p class="text-muted small mb-0">
+          Instant validation results
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>

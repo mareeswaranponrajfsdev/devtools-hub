@@ -1,10 +1,14 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { JsonEngine } from '../services/json-engine';
+import { JsonAutoFix } from '../services/json-auto-fix';
 
 @Injectable()
 export class JsonFormatterStore {
 
-  constructor(private engine: JsonEngine) {}
+  constructor(
+    private engine: JsonEngine,
+    private autoFix: JsonAutoFix
+  ) {}
 
 
   /* ================= STATE ================= */
@@ -20,6 +24,9 @@ export class JsonFormatterStore {
 
   // Live validation toggle
   liveMode = signal<boolean>(false);
+
+  // Tree view toggle
+  treeView = signal<boolean>(false);
 
 
   /* ================= COMPUTED ================= */
@@ -56,6 +63,11 @@ export class JsonFormatterStore {
   }
 
 
+  toggleTreeView() {
+    this.treeView.update(v => !v);
+  }
+
+
   // -------- Format --------
   format() {
 
@@ -88,6 +100,43 @@ export class JsonFormatterStore {
     } catch (err: any) {
 
       this.handleError(err);
+
+    }
+
+  }
+
+
+  // -------- Auto Fix --------
+  autoFixJson(): void {
+
+    const input = this.input().trim();
+
+    if (!input) {
+      this.error.set('Please enter JSON first');
+      return;
+    }
+
+    try {
+
+      // Apply auto-fix
+      const fixed = this.autoFix.fix(input);
+
+      // Validate it works
+      JSON.parse(fixed);
+
+      // Update input with fixed version
+      this.input.set(fixed);
+
+      // Format the output
+      this.format();
+
+      this.error.set('JSON auto-fixed successfully!');
+
+      this.autoClearMessage();
+
+    } catch (err: any) {
+
+      this.error.set('Could not auto-fix JSON: ' + err.message);
 
     }
 

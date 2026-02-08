@@ -1,1 +1,47 @@
-<div class="monaco-container" #container></div>
+<div class="editor-wrapper">
+
+  <!-- Hidden File Input -->
+  <input
+    #fileInput
+    type="file"
+    accept=".json"
+    style="display: none;"
+    (change)="onFileSelected($event)">
+
+
+  <!-- Monaco Container -->
+  <div
+    class="monaco-container"
+    #container
+    [class.dragging]="isDragging()">
+  </div>
+
+
+  <!-- Drag & Drop Overlay -->
+  @if (isDragging()) {
+
+    <div class="drag-overlay">
+      <div class="drag-content">
+        <i class="fa-solid fa-file-arrow-up"></i>
+        <p>Drop JSON file here</p>
+      </div>
+    </div>
+
+  }
+
+
+  <!-- Upload Button (Optional - Floating) -->
+  @if (placeholder) {
+
+    <button
+      class="upload-btn"
+      type="button"
+      (click)="triggerFileInput()"
+      title="Upload JSON file">
+      <i class="fa-solid fa-upload"></i>
+      Upload File
+    </button>
+
+  }
+
+</div>

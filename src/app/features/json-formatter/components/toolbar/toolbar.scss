@@ -6,7 +6,7 @@
   background: #f8fbff;
   border: 1px solid #e5eef7;
 
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-radius: 12px;
 
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
@@ -29,12 +29,13 @@
   align-items: center;
   gap: 6px;
 
-  padding: 6px 14px;
+  padding: 4px 10px;
 
   border-radius: 8px;
   border: 1px solid transparent;
 
   color: #334155;
+  background: #ffffff;
 
   font-size: 14px;
   font-weight: 500;
@@ -61,6 +62,30 @@
 
 .tool-btn.primary:hover {
   background: #0b5ed7;
+}
+
+
+/* Success (Auto Fix) */
+.tool-btn.success {
+  background: #10b981;
+  color: #fff;
+  border: none;
+}
+
+.tool-btn.success:hover {
+  background: #059669;
+}
+
+
+/* Active State (Tree View) */
+.tool-btn.active {
+  background: #dbeafe;
+  border-color: #60a5fa;
+  color: #1e40af;
+}
+
+.tool-btn.active:hover {
+  background: #bfdbfe;
 }
 
 
@@ -214,4 +239,27 @@
 .tooltip-wrapper:hover .tooltip-text {
   opacity: 1;
   visibility: visible;
+}
+
+
+/* ===============================
+   MOBILE RESPONSIVE
+=============================== */
+
+@media (max-width: 768px) {
+
+  .toolbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .toolbar-left {
+    justify-content: center;
+  }
+
+  .toolbar-right {
+    justify-content: center;
+  }
+
 }

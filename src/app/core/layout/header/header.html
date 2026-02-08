@@ -1,13 +1,17 @@
-<nav class="navbar navbar-expand-lg fixed-top border-bottom">
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container header-container">
 
-  <div class="container">
+    <!-- BRAND -->
+    <a class="navbar-brand" routerLink="/">
+      <span class="brand-icon">&#123;&#125;</span>
 
-    <!-- Logo -->
-    <a class="navbar-brand" href="#home">
-      DevTools Hub
+      <span class="brand-text">
+        <span class="brand-title">Dev JSON Tools</span>
+        <span class="brand-subtitle">Developer Utilities</span>
+      </span>
     </a>
 
-    <!-- Toggle -->
+    <!-- TOGGLER -->
     <button
       class="navbar-toggler"
       type="button"
@@ -17,66 +21,45 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Menu -->
+    <!-- NAV -->
     <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav ms-auto align-items-center">
 
-      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <!-- TOOLS CAPSULE -->
+        <li class="nav-item tools-nav">
 
-        <li class="nav-item">
-          <a
-            href="#home"
-            class="nav-link"
-          >
-            Home
+          <a routerLink="/" class="tool-link active" (click)="closeNavbar()">
+            <i class="fa-solid fa-align-left"></i>
+            JSON Formatter
           </a>
+
+          <a routerLink="/json-to-code" class="tool-link" (click)="closeNavbar()">
+            <i class="fa-regular fa-file-code"></i>
+            JSON to Code
+          </a>
+
+          <a routerLink="/json-diff" class="tool-link" (click)="closeNavbar()">
+            <i class="fa-solid fa-code-compare"></i>
+            JSON Diff
+          </a>
+
+          <a routerLink="/json-schema-validator" class="tool-link" (click)="closeNavbar()">
+            <i class="fa-solid fa-shield-halved"></i>
+            Schema Validator
+          </a>
+
+        </li>
+
+        <!-- META LINKS -->
+        <li class="nav-item">
+          <a href="#about" class="nav-link meta-link" (click)="closeNavbar()">About</a>
         </li>
 
         <li class="nav-item">
-          <a
-            href="#why-use"
-            class="nav-link"
-          >
-            Tools
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="#about" class="nav-link">
-            About
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="#contact" class="nav-link">
-            Contact
-          </a>
-        </li>
-
-        <!-- Theme -->
-        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-
-          <button
-            type="button"
-            class="btn btn-outline-primary btn-sm theme-btn"
-            (click)="toggleTheme()"
-            aria-label="Toggle theme"
-          >
-
-            <i
-              class="fa-solid"
-              [class.fa-moon]="!isDark()"
-              [class.fa-sun]="isDark()"
-            ></i>
-
-          </button>
-
-
+          <a href="#contact" class="nav-link meta-link" (click)="closeNavbar()">Contact</a>
         </li>
 
       </ul>
-
     </div>
-
   </div>
-
 </nav>
