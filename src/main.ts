@@ -14,16 +14,10 @@ const savedTheme = localStorage.getItem(THEME_KEY);
 
 // Apply before Angular loads (prevents flicker)
 if (savedTheme === 'dark' || savedTheme === 'light') {
-  document.documentElement.setAttribute(
-    'data-theme',
-    savedTheme
-  );
+  document.documentElement.setAttribute('data-theme', savedTheme);
 } else {
   // Default: Light
-  document.documentElement.setAttribute(
-    'data-theme',
-    'light'
-  );
+  document.documentElement.setAttribute('data-theme', 'light');
 }
 
 /****************************************************************
@@ -31,10 +25,21 @@ if (savedTheme === 'dark' || savedTheme === 'light') {
  ****************************************************************/
 
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
-bootstrapApplication(App, appConfig)
-  .catch(err => {
-    console.error('Angular bootstrap failed:', err);
-  });
+import { App } from './app/app';
+import { routes } from './app/app.routes';
+
+bootstrapApplication(App, {
+  providers: [
+    provideRouter(
+      routes,
+      withInMemoryScrolling({
+        anchorScrolling: 'enabled',
+        scrollPositionRestoration: 'enabled',
+      })
+    ),
+  ],
+}).catch(err => {
+  console.error('Angular bootstrap failed:', err);
+});

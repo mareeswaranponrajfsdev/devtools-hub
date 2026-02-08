@@ -1,31 +1,64 @@
-<nav class="navbar navbar-expand-lg fixed-top border-bottom">
-  <div class="container">
-    <a class="navbar-brand" href="#tools">Dev JSON Tools – JSON Formatter & Validator</a>
-    
-    <section class="container">
-      <div class="hero-trust">
-        <span class="trust-item"><i class="fa-solid fa-user-lock"></i> No Login Required</span>
-        <span class="trust-item"><i class="fa-solid fa-globe"></i> Runs in Browser</span>
-        <span class="trust-item"><i class="fa-solid fa-database"></i> No Data Stored on Server</span>
-      </div>
-    </section>
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container header-container">
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+    <!-- BRAND -->
+    <a class="navbar-brand" routerLink="/">
+      <span class="brand-icon">&#123;&#125;</span>
+
+      <span class="brand-text">
+        <span class="brand-title">Dev JSON Tools</span>
+        <span class="brand-subtitle">Developer Utilities</span>
+      </span>
+    </a>
+
+    <!-- TOGGLER -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#mainNavbar"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
+    <!-- NAV -->
     <div class="collapse navbar-collapse" id="mainNavbar">
-      <ul class="navbar-nav ms-auto align-items-lg-center">
-        <li class="nav-item"><a href="#tools" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="#tools" class="nav-link">Tools</a></li>
-        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-        
-        <!-- <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-          <button type="button" class="btn btn-outline-primary btn-sm theme-btn" (click)="toggleTheme()" aria-label="Toggle theme" [title]="isDark() ? 'Light mode' : 'Dark mode'">
-            <i class="fa-solid" [class.fa-moon]="!isDark()" [class.fa-sun]="isDark()"></i>
-          </button>
-        </li> -->
+      <ul class="navbar-nav ms-auto align-items-center">
+
+        <!-- TOOLS CAPSULE -->
+        <li class="nav-item tools-nav">
+
+          <a routerLink="/" class="tool-link active">
+            <i class="fa-solid fa-align-left"></i>
+            JSON Formatter
+          </a>
+
+          <a routerLink="/json-to-code" class="tool-link">
+            <i class="fa-regular fa-file-code"></i>
+            JSON to Code
+          </a>
+
+          <a routerLink="/json-diff" class="tool-link">
+            <i class="fa-solid fa-code-compare"></i>
+            JSON Diff
+          </a>
+
+          <a routerLink="/json-schema-validator" class="tool-link">
+            <i class="fa-solid fa-shield-halved"></i>
+            Schema Validator
+          </a>
+
+        </li>
+
+        <!-- META LINKS -->
+        <li class="nav-item">
+          <a href="#about" class="nav-link meta-link">About</a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#contact" class="nav-link meta-link">Contact</a>
+        </li>
+
       </ul>
     </div>
   </div>
