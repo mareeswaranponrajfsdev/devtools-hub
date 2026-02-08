@@ -30,7 +30,7 @@ export class FaqSection {
     {
       question: 'Is this JSON formatter free to use?',
       answer: `
-  Yes, DevTools Hub JSON Formatter is completely free with no usage limits. You don't need to create an
+  Yes, Dev JSON Tools JSON Formatter is completely free with no usage limits. You don't need to create an
   account or sign up. The tool is supported by non-intrusive ads to keep it free for all developers.
       `
     },
