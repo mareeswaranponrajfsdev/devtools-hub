@@ -88,6 +88,19 @@
   }
   </script>
 
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4ZMZL06J8B"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-4ZMZL06J8B', {
+      anonymize_ip: true
+    });
+  </script>
+
+
 </head>
 <body>
   <app-root></app-root>
