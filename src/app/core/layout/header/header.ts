@@ -36,4 +36,20 @@ export class Header {
 
     localStorage.setItem(this.key, theme);
   }
+
+  closeNavbar() {
+
+    // Scroll to section
+    // document.getElementById(id)?.scrollIntoView({
+    //   behavior: 'smooth'
+    // });
+
+    // Close navbar (mobile)
+    const navbar = document.getElementById('mainNavbar');
+
+    if (navbar?.classList.contains('show')) {
+      navbar.classList.remove('show');
+    }
+  }
+
 }

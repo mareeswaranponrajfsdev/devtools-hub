@@ -1,29 +1,27 @@
-.hero-trust {
+.trust-strip {
   display: flex;
   justify-content: center;
-  gap: 2.5rem;
-  flex-wrap: wrap;
+  gap: 2.50rem;
 
-  font-size: 0.75rem;
-  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748b;
+
+  padding: 4px 0;
+  margin-top: -15px;        /* visually sticks to header */
+  border-bottom: 1px solid #f1f2f4;
+
+  white-space: nowrap;
+  box-shadow: 0 1px 2px #f1f2f4;
 }
 
-.hero-trust i {
-  color: #22c55e;
-  margin-right: 4px;
-}
-
-.trust-item {
+.trust-strip span {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-weight: 500;
+  gap: 4px;
 }
 
-.trust-item.active {
-  color: var(--success);
-}
-
-.trust-item i {
-  font-size: 0.9rem;
+.trust-strip i {
+  font-size: 0.7rem;
+  color: #22c55e;
 }

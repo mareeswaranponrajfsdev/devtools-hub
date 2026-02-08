@@ -28,22 +28,22 @@
         <!-- TOOLS CAPSULE -->
         <li class="nav-item tools-nav">
 
-          <a routerLink="/" class="tool-link active">
+          <a routerLink="/" class="tool-link active" (click)="closeNavbar()">
             <i class="fa-solid fa-align-left"></i>
             JSON Formatter
           </a>
 
-          <a routerLink="/json-to-code" class="tool-link">
+          <a routerLink="/json-to-code" class="tool-link" (click)="closeNavbar()">
             <i class="fa-regular fa-file-code"></i>
             JSON to Code
           </a>
 
-          <a routerLink="/json-diff" class="tool-link">
+          <a routerLink="/json-diff" class="tool-link" (click)="closeNavbar()">
             <i class="fa-solid fa-code-compare"></i>
             JSON Diff
           </a>
 
-          <a routerLink="/json-schema-validator" class="tool-link">
+          <a routerLink="/json-schema-validator" class="tool-link" (click)="closeNavbar()">
             <i class="fa-solid fa-shield-halved"></i>
             Schema Validator
           </a>
@@ -52,11 +52,11 @@
 
         <!-- META LINKS -->
         <li class="nav-item">
-          <a href="#about" class="nav-link meta-link">About</a>
+          <a href="#about" class="nav-link meta-link" (click)="closeNavbar()">About</a>
         </li>
 
         <li class="nav-item">
-          <a href="#contact" class="nav-link meta-link">Contact</a>
+          <a href="#contact" class="nav-link meta-link" (click)="closeNavbar()">Contact</a>
         </li>
 
       </ul>
