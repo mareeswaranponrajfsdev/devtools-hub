@@ -14,6 +14,8 @@ import { Editor } from '../../components/editor/editor';
 import { Toolbar } from '../../components/toolbar/toolbar';
 import { TreeView } from '../../components/tree-view/tree-view';
 import { CommonModule } from '@angular/common';
+import { AnalyticsService } from '../../../../core/analytics/analytics.service';
+import { ANALYTICS_EVENTS } from '../../../../core/analytics/analytics-events';
 
 @Component({
   selector: 'app-json-formatter-page',
@@ -47,7 +49,8 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
 
   constructor(
     public readonly store: JsonFormatterStore,
-    private cdr: ChangeDetectorRef   
+    private cdr: ChangeDetectorRef,
+    private analytics: AnalyticsService 
   ) {}
 
   ngOnInit() {
@@ -219,8 +222,18 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     this.store.setInput(sampleJson);
 
     // Auto format
-    this.store.format();
+    this.onFormat();
 
+  }
+
+  onFormat(): void {
+    this.store.format();
+    this.analytics.track(ANALYTICS_EVENTS.JSON_FORMAT);
+  }
+
+  onMinify(): void {
+    this.store.minify();
+    this.analytics.track(ANALYTICS_EVENTS.JSON_MINIFY);
   }
 
 

@@ -1,6 +1,8 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AnalyticsService } from '../../../../core/analytics/analytics.service';
+import { ANALYTICS_EVENTS } from '../../../../core/analytics/analytics-events';
 
 /* ✅ Define Language Type */
 type Language = 'csharp' | 'typescript' | 'java';
@@ -32,6 +34,10 @@ export class CodeGeneratorPage {
     { value: 'java', label: 'Java', icon: 'fa-brands fa-java' }
   ];
 
+  constructor(
+    private analytics: AnalyticsService 
+  ) {}
+
   /* ============================= */
 
   generateCode(): void {
@@ -53,6 +59,8 @@ export class CodeGeneratorPage {
       );
 
       this.generatedCode.set(code);
+
+      this.analytics.track(ANALYTICS_EVENTS.JSON_TO_CODE);
 
     } catch (err) {
 

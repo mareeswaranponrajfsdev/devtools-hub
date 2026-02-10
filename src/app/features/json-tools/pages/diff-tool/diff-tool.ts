@@ -1,6 +1,8 @@
 import { Component, WritableSignal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AnalyticsService } from '../../../../core/analytics/analytics.service';
+import { ANALYTICS_EVENTS } from '../../../../core/analytics/analytics-events';
 
 interface DiffResult {
   path: string;
@@ -24,6 +26,10 @@ export class DiffToolPage {
   error: WritableSignal<string> = signal('');
   leftParsed: any = null;
   rightParsed: any = null;
+
+  constructor(
+    private analytics: AnalyticsService 
+  ) {}
   
   compareLists() {
     this.error.set('');
@@ -40,6 +46,8 @@ export class DiffToolPage {
       
       const diffs = this.compareObjects(this.leftParsed, this.rightParsed, '');
       this.differences.set(diffs);
+
+      this.analytics.track(ANALYTICS_EVENTS.JSON_DIFF);
       
     } catch (err) {
       this.error.set('Invalid JSON: ' + (err as Error).message);

@@ -6,9 +6,8 @@
     [treeView]="store.treeView()"
     [disabled]="!store.input()"
 
-    (format)="store.format()"
-    (minify)="store.minify()"
-    (validate)="store.validate()"
+    (format)="onFormat()"
+    (minify)="onMinify()"
     (clear)="store.clear()"
     (copy)="store.copy()"
     (toggleLive)="store.toggleLive()"
