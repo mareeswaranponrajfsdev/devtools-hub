@@ -1,0 +1,81 @@
+<div class="formatter-options">
+  <button 
+    class="options-trigger"
+    (click)="toggleDropdown()"
+    [class.active]="isOpen()"
+    title="Formatter Options">
+    <i class="fa-solid fa-gear"></i>
+  </button>
+
+  <div class="options-dropdown" [class.open]="isOpen()">
+    
+    <!-- Indentation -->
+    <div class="option-group">
+      <label class="option-label">Indentation</label>
+      <div class="option-buttons">
+        <button 
+          class="option-btn"
+          [class.active]="options.indentation === '2spaces'"
+          (click)="updateIndentation('2spaces')">
+          2 Spaces
+        </button>
+        <button 
+          class="option-btn"
+          [class.active]="options.indentation === '4spaces'"
+          (click)="updateIndentation('4spaces')">
+          4 Spaces
+        </button>
+        <button 
+          class="option-btn"
+          [class.active]="options.indentation === 'tab'"
+          (click)="updateIndentation('tab')">
+          Tab
+        </button>
+      </div>
+    </div>
+
+    <!-- Sort Keys -->
+    <div class="option-group">
+      <label class="option-label">
+        <span>Sort Keys</span>
+        <span class="option-hint">Alphabetically</span>
+      </label>
+      <label class="toggle-switch">
+        <input 
+          type="checkbox" 
+          [checked]="options.sortKeys"
+          (change)="toggleSortKeys()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- Compact Arrays -->
+    <div class="option-group">
+      <label class="option-label">
+        <span>Array Formatting</span>
+        <span class="option-hint">Small arrays (≤3 items)</span>
+      </label>
+      <div class="option-buttons">
+        <button 
+          class="option-btn"
+          [class.active]="options.compactArrays === 'inline'"
+          (click)="updateArrayFormatting('inline')">
+          Inline
+        </button>
+        <button 
+          class="option-btn"
+          [class.active]="options.compactArrays === 'multiline'"
+          (click)="updateArrayFormatting('multiline')">
+          Multi-line
+        </button>
+      </div>
+    </div>
+
+    <!-- Info Footer -->
+    <div class="option-info">
+      <i class="fa-solid fa-circle-info"></i>
+      Trailing commas are automatically removed
+    </div>
+
+  </div>
+</div>

@@ -1,10 +1,19 @@
 <div class="container py-3">
 
+  <!-- Hidden File Input -->
+  <input
+    #fileInput
+    type="file"
+    accept=".json"
+    style="display: none;"
+    (change)="onFileSelected($event)">
+
   <!-- Toolbar -->
   <app-json-toolbar
     [live]="store.liveMode()"
     [treeView]="store.treeView()"
     [disabled]="!store.input()"
+    [formatterOptions]="store.formatterOptions()"
 
     (format)="onFormat()"
     (minify)="onMinify()"
@@ -13,7 +22,8 @@
     (toggleLive)="store.toggleLive()"
     (toggleTree)="store.toggleTreeView()"
     (sample)="loadSample()"
-    (autoFix)="store.autoFixJson()">
+    (autoFix)="store.autoFixJson()"
+    (optionsChange)="onOptionsChange($event)">
   </app-json-toolbar>
 
 
@@ -44,29 +54,88 @@
     <!-- INPUT -->
     <div class="col-12 col-lg-6">
 
-      <div class="editor-card">
+      <div class="editor-card" #inputContainer>
 
         <!-- HEADER -->
         <div class="editor-header">
 
           <h6 class="editor-title">Input JSON</h6>
 
-          <div class="stats-inline">
-            <span>{{ store.charCount() }} chars</span>
-            <span>•</span>
-            <span>{{ store.lineCount() }} lines</span>
-            <span>•</span>
-            <span>{{ store.fileSize() }} KB</span>
+          <div class="input-actions">
+
+            <!-- Undo -->
+            <button
+              class="action-btn"
+              type="button"
+              [disabled]="!store.canUndo()"
+              (click)="onUndo()"
+              title="Undo (Ctrl+Z)">
+              <i class="fa-solid fa-undo"></i>
+            </button>
+
+            <!-- Redo -->
+            <button
+              class="action-btn"
+              type="button"
+              [disabled]="!store.canRedo()"
+              (click)="onRedo()"
+              title="Redo (Ctrl+Y)">
+              <i class="fa-solid fa-redo"></i>
+            </button>
+
+            <!-- Upload File -->
+            <button
+              class="action-btn"
+              type="button"
+              (click)="triggerFileUpload()"
+              title="Upload JSON file">
+              <i class="fa-solid fa-file-arrow-up"></i>
+            </button>
+
+            <!-- Print -->
+            <button
+              class="action-btn"
+              type="button"
+              [disabled]="!store.input()"
+              (click)="printInput()"
+              title="Print JSON">
+              <i class="fa-solid fa-print"></i>
+            </button>
+
+            <!-- Fullscreen -->
+            <button
+              class="action-btn fullscreen-btn"
+              type="button"
+              (click)="toggleFullscreenInput()"
+              [title]="isFullscreenInput ? 'Exit Fullscreen (ESC)' : 'Enter Fullscreen'">
+              <i
+                class="fa-solid"
+                [class.fa-expand]="!isFullscreenInput"
+                [class.fa-compress]="isFullscreenInput">
+              </i>
+            </button>
+
+            <!-- Stats -->
+            <div class="stats-inline">
+              <span>{{ store.charCount() }} chars</span>
+              <span>•</span>
+              <span>{{ store.lineCount() }} lines</span>
+              <span>•</span>
+              <span>{{ store.fileSize() }} KB</span>
+            </div>
+
           </div>
 
         </div>
 
 
-        <app-json-editor
-          [value]="store.input()"
-          placeholder="Paste your JSON here, or drag & drop a .json file..."
-          (valueChange)="store.setInput($event)">
-        </app-json-editor>
+        <div class="editor-wrapper">
+          <app-json-editor
+            [value]="store.input()"
+            placeholder="Paste your JSON here, or drag & drop a .json file..."
+            (valueChange)="store.setInput($event)">
+          </app-json-editor>
+        </div>
 
       </div>
 
@@ -82,42 +151,62 @@
         <div class="editor-header">
 
           <h6 class="editor-title">
-            {{ store.treeView() ? 'Tree View' : 'Formatted Output' }}
+            @if (store.currentConversion()) {
+              {{ store.currentConversion()?.toUpperCase() }} Output
+            } @else {
+              {{ store.treeView() ? 'Tree View' : 'Formatted Output' }}
+            }
           </h6>
 
           <div class="output-actions">
 
+            <!-- Convert Dropdown -->
+            @if (!store.treeView()) {
+
+              <select
+                class="convert-select"
+                [disabled]="!store.output()"
+                (change)="onConvertSelect($event)"
+              >
+                <option value="">Convert</option>
+                <option value="xml">JSON → XML</option>
+                <option value="csv">JSON → CSV</option>
+                <option value="yaml">JSON → YAML</option>
+
+                @if (store.currentConversion()) {
+                  <option value="reset">Back to JSON</option>
+                }
+              </select>
+            }
+
+            <!-- Fullscreen -->
             <button
               class="action-btn fullscreen-btn"
               type="button"
-              (click)="toggleFullscreen()"
-              [title]="isFullscreen ? 'Exit Fullscreen (ESC)' : 'Enter Fullscreen'"
-            >
+              (click)="toggleFullscreenOutput()"
+              [title]="isFullscreenOutput ? 'Exit Fullscreen (ESC)' : 'Enter Fullscreen'">
               <i
                 class="fa-solid"
-                [class.fa-expand]="!isFullscreen"
-                [class.fa-compress]="isFullscreen"
-              ></i>
-              {{ isFullscreen ? 'Minimize' : 'Fullscreen' }}
+                [class.fa-expand]="!isFullscreenOutput"
+                [class.fa-compress]="isFullscreenOutput">
+              </i>
+              {{ isFullscreenOutput ? 'Minimize' : 'Fullscreen' }}
             </button>
 
+            <!-- Copy -->
             <button
               class="action-btn"
               type="button"
               [class.copied]="copied"
               [disabled]="!store.output()"
               (click)="copyOutput()">
-
               <i
                 class="fa-solid"
                 [class.fa-copy]="!copied"
                 [class.fa-circle-check]="copied">
               </i>
-
               {{ copied ? 'Copied' : 'Copy' }}
-
             </button>
-
 
             <!-- Download JSON -->
             <button
@@ -125,12 +214,9 @@
               type="button"
               [disabled]="!store.output()"
               (click)="downloadJson()">
-
               <i class="fa-solid fa-download"></i>
               .json
-
             </button>
-
 
             <!-- Download TXT -->
             <button
@@ -138,10 +224,8 @@
               type="button"
               [disabled]="!store.output()"
               (click)="downloadTxt()">
-
               <i class="fa-regular fa-file-lines"></i>
               .txt
-
             </button>
 
           </div>
@@ -168,8 +252,6 @@
           }
 
         </div>
-
-
 
       </div>
 

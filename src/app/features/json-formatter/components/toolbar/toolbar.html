@@ -4,7 +4,7 @@
   <div class="toolbar-left">
 
     <button
-      class="tool-btn primary"
+      class="btn btn-primary"
       (click)="format.emit()"
       [disabled]="disabled">
 
@@ -71,28 +71,37 @@
 
 
   <!-- Right Toggle -->
-  <div class="toolbar-right tooltip-wrapper">
+  <div class="toolbar-right">
 
-    <span class="live-label">
-      Live
-    </span>
+    <app-formatter-options
+      [options]="formatterOptions"
+      (optionsChange)="optionsChange.emit($event)">
+    </app-formatter-options>
 
-    <label class="switch">
+    <div class="tooltip-wrapper">
 
-      <input
-        type="checkbox"
-        [checked]="live"
-        (change)="toggleLive.emit()">
+      <span class="live-label">
+        Live
+      </span>
 
-      <span class="slider"></span>
+      <label class="switch">
 
-    </label>
+        <input
+          type="checkbox"
+          [checked]="live"
+          (change)="toggleLive.emit()">
+
+        <span class="slider"></span>
+
+      </label>
 
 
-    <!-- Tooltip -->
-    <span class="tooltip-text">
-      Enable live validation while typing
-    </span>
+      <!-- Tooltip -->
+      <span class="tooltip-text">
+        Enable live validation while typing
+      </span>
+
+    </div>
 
   </div>
 

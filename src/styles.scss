@@ -40,3 +40,12 @@ body {
   color: var(--text-main);
   transition: background 0.2s, color 0.2s;
 }
+
+
+.btn-primary {
+  background: var(--primary);
+}
+
+.btn-primary:disabled {
+  background: var(--primary);
+}
