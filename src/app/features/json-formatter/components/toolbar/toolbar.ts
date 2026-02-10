@@ -5,10 +5,14 @@ import {
   Input,
   Output,
 } from '@angular/core';
+import { FormatterOptions } from '../../models/formatter-options.model';
+import { FormatterOptionsComponent } from '../formatter-options/formatter-options';
+
 
 @Component({
   selector: 'app-json-toolbar',
   standalone: true,
+  imports: [FormatterOptionsComponent],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +28,9 @@ export class Toolbar {
   @Input()
   treeView = false;
 
+  @Input()
+  formatterOptions!: FormatterOptions;
+
   @Output() format = new EventEmitter<void>();
   @Output() minify = new EventEmitter<void>();
   @Output() validate = new EventEmitter<void>();
@@ -33,5 +40,6 @@ export class Toolbar {
   @Output() toggleTree = new EventEmitter<void>();
   @Output() sample = new EventEmitter<void>();
   @Output() autoFix = new EventEmitter<void>();
+  @Output() optionsChange = new EventEmitter<FormatterOptions>();
 
 }

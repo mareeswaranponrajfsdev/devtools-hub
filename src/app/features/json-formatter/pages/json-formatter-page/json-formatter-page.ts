@@ -14,10 +14,12 @@ import { JsonFormatterStore } from '../../state/json-formatter.store';
 import { Editor } from '../../components/editor/editor';
 import { Toolbar } from '../../components/toolbar/toolbar';
 import { TreeView } from '../../components/tree-view/tree-view';
+import { FormatterOptionsComponent } from '../../components/formatter-options/formatter-options';
 import { CommonModule } from '@angular/common';
 import { AnalyticsService } from '../../../../core/analytics/analytics.service';
 import { ANALYTICS_EVENTS } from '../../../../core/analytics/analytics-events';
 import { ConversionFormat } from '../../services/json-converter.service';
+import { FormatterOptions } from '../../models/formatter-options.model';
 
 @Component({
   selector: 'app-json-formatter-page',
@@ -27,6 +29,7 @@ import { ConversionFormat } from '../../services/json-converter.service';
     Editor,
     Toolbar,
     TreeView,
+    FormatterOptionsComponent,
     CommonModule 
   ],
 
@@ -245,6 +248,15 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     if (format) {
       this.analytics.track(`json_convert_${format}`);
     }
+  }
+
+
+  /* ===============================
+     FORMATTER OPTIONS
+  =============================== */
+
+  onOptionsChange(options: FormatterOptions): void {
+    this.store.updateOptions(options);
   }
 
 

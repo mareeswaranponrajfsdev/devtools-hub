@@ -13,6 +13,7 @@
     [live]="store.liveMode()"
     [treeView]="store.treeView()"
     [disabled]="!store.input()"
+    [formatterOptions]="store.formatterOptions()"
 
     (format)="onFormat()"
     (minify)="onMinify()"
@@ -21,7 +22,8 @@
     (toggleLive)="store.toggleLive()"
     (toggleTree)="store.toggleTreeView()"
     (sample)="loadSample()"
-    (autoFix)="store.autoFixJson()">
+    (autoFix)="store.autoFixJson()"
+    (optionsChange)="onOptionsChange($event)">
   </app-json-toolbar>
 
 
