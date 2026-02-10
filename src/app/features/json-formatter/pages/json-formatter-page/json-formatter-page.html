@@ -162,37 +162,21 @@
 
             <!-- Convert Dropdown -->
             @if (!store.treeView()) {
-              <div class="convert-dropdown">
-                <button
-                  class="action-btn convert-btn"
-                  type="button"
-                  [disabled]="!store.output()"
-                  title="Convert JSON">
-                  <i class="fa-solid fa-arrow-right-arrow-left"></i>
-                  Convert
-                  <i class="fa-solid fa-caret-down"></i>
-                </button>
-                <div class="dropdown-menu">
-                  <button (click)="onConvert('xml')">
-                    <i class="fa-solid fa-code"></i>
-                    JSON → XML
-                  </button>
-                  <button (click)="onConvert('csv')">
-                    <i class="fa-solid fa-table"></i>
-                    JSON → CSV
-                  </button>
-                  <button (click)="onConvert('yaml')">
-                    <i class="fa-solid fa-file-code"></i>
-                    JSON → YAML
-                  </button>
-                  @if (store.currentConversion()) {
-                    <button (click)="onConvert(null)" class="reset-btn">
-                      <i class="fa-solid fa-rotate-left"></i>
-                      Back to JSON
-                    </button>
-                  }
-                </div>
-              </div>
+
+              <select
+                class="convert-select"
+                [disabled]="!store.output()"
+                (change)="onConvertSelect($event)"
+              >
+                <option value="">Convert</option>
+                <option value="xml">JSON → XML</option>
+                <option value="csv">JSON → CSV</option>
+                <option value="yaml">JSON → YAML</option>
+
+                @if (store.currentConversion()) {
+                  <option value="reset">Back to JSON</option>
+                }
+              </select>
             }
 
             <!-- Fullscreen -->

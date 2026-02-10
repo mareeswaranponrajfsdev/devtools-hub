@@ -52,7 +52,7 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
 
   isFullscreenInput = false;
   isFullscreenOutput = false;
-
+  isConvertOpen = false;
   
 
   constructor(
@@ -68,6 +68,24 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
       this.cdr.markForCheck();
     });
   }
+
+  toggleConvertDropdown(event: MouseEvent) {
+    this.isConvertOpen = !this.isConvertOpen;
+  }
+
+  onConvertSelect(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+
+    if (value === 'reset') {
+      this.onConvert(null);
+    } else if (value) {
+      this.onConvert(value as 'xml' | 'csv' | 'yaml');
+    }
+
+    // Reset select back to placeholder
+    (event.target as HTMLSelectElement).value = '';
+  }
+
 
 
   /* ===============================
@@ -248,6 +266,8 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     if (format) {
       this.analytics.track(`json_convert_${format}`);
     }
+
+    this.isConvertOpen = false;
   }
 
 
