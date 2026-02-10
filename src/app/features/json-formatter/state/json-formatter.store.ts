@@ -1,13 +1,20 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { JsonEngine } from '../services/json-engine';
 import { JsonAutoFix } from '../services/json-auto-fix';
+import { JsonConverterService, ConversionFormat } from '../services/json-converter.service';
+
+interface HistoryEntry {
+  value: string;
+  timestamp: number;
+}
 
 @Injectable()
 export class JsonFormatterStore {
 
   constructor(
     private engine: JsonEngine,
-    private autoFix: JsonAutoFix
+    private autoFix: JsonAutoFix,
+    private converter: JsonConverterService
   ) {}
 
 
@@ -27,6 +34,17 @@ export class JsonFormatterStore {
 
   // Tree view toggle
   treeView = signal<boolean>(false);
+
+  // Current conversion format
+  currentConversion = signal<ConversionFormat | null>(null);
+
+  // Undo/Redo history
+  private history: HistoryEntry[] = [];
+  private historyIndex = -1;
+  private maxHistorySize = 50;
+
+  canUndo = signal<boolean>(false);
+  canRedo = signal<boolean>(false);
 
 
   /* ================= COMPUTED ================= */
@@ -48,9 +66,13 @@ export class JsonFormatterStore {
 
   /* ================= ACTIONS ================= */
 
-  setInput(value: string) {
+  setInput(value: string, addToHistory = true) {
 
     this.input.set(value);
+
+    if (addToHistory) {
+      this.addToHistory(value);
+    }
 
     if (this.liveMode()) {
       this.validate();
@@ -71,6 +93,9 @@ export class JsonFormatterStore {
   // -------- Format --------
   format() {
 
+    // Reset conversion when formatting
+    this.currentConversion.set(null);
+
     try {
 
       const result = this.engine.format(this.input());
@@ -89,6 +114,9 @@ export class JsonFormatterStore {
 
   // -------- Minify --------
   minify() {
+
+    // Reset conversion when minifying
+    this.currentConversion.set(null);
 
     try {
 
@@ -125,7 +153,7 @@ export class JsonFormatterStore {
       JSON.parse(fixed);
 
       // Update input with fixed version
-      this.input.set(fixed);
+      this.setInput(fixed);
 
       // Format the output
       this.format();
@@ -181,9 +209,10 @@ export class JsonFormatterStore {
   // -------- Clear --------
   clear() {
 
-    this.input.set('');
+    this.setInput('');
     this.output.set('');
     this.error.set(null);
+    this.currentConversion.set(null);
 
   }
 
@@ -194,6 +223,110 @@ export class JsonFormatterStore {
     if (!this.output()) return;
 
     navigator.clipboard.writeText(this.output());
+
+  }
+
+
+  /* ================= UNDO/REDO ================= */
+
+  private addToHistory(value: string): void {
+
+    // Don't add if value hasn't changed
+    if (this.history[this.historyIndex]?.value === value) {
+      return;
+    }
+
+    // Remove any forward history
+    this.history = this.history.slice(0, this.historyIndex + 1);
+
+    // Add new entry
+    this.history.push({
+      value,
+      timestamp: Date.now()
+    });
+
+    // Limit history size
+    if (this.history.length > this.maxHistorySize) {
+      this.history.shift();
+    } else {
+      this.historyIndex++;
+    }
+
+    this.updateUndoRedoState();
+
+  }
+
+  undo(): void {
+
+    if (this.historyIndex > 0) {
+      this.historyIndex--;
+      const entry = this.history[this.historyIndex];
+      this.input.set(entry.value);
+      this.updateUndoRedoState();
+    }
+
+  }
+
+  redo(): void {
+
+    if (this.historyIndex < this.history.length - 1) {
+      this.historyIndex++;
+      const entry = this.history[this.historyIndex];
+      this.input.set(entry.value);
+      this.updateUndoRedoState();
+    }
+
+  }
+
+  private updateUndoRedoState(): void {
+    this.canUndo.set(this.historyIndex > 0);
+    this.canRedo.set(this.historyIndex < this.history.length - 1);
+  }
+
+
+  /* ================= CONVERSION ================= */
+
+  convert(format: ConversionFormat | null): void {
+
+    if (format === null) {
+      // Reset to JSON
+      this.currentConversion.set(null);
+      this.format();
+      return;
+    }
+
+    const output = this.output();
+
+    if (!output) {
+      this.error.set('Please format JSON first');
+      return;
+    }
+
+    try {
+
+      let converted = '';
+
+      switch (format) {
+        case 'xml':
+          converted = this.converter.toXml(output);
+          break;
+        case 'csv':
+          converted = this.converter.toCsv(output);
+          break;
+        case 'yaml':
+          converted = this.converter.toYaml(output);
+          break;
+      }
+
+      this.output.set(converted);
+      this.currentConversion.set(format);
+      this.error.set(null);
+
+    } catch (err: any) {
+
+      this.error.set(`Conversion failed: ${err.message}`);
+
+    }
 
   }
 

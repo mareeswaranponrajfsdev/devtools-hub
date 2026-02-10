@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  HostListener,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -16,6 +17,7 @@ import { TreeView } from '../../components/tree-view/tree-view';
 import { CommonModule } from '@angular/common';
 import { AnalyticsService } from '../../../../core/analytics/analytics.service';
 import { ANALYTICS_EVENTS } from '../../../../core/analytics/analytics-events';
+import { ConversionFormat } from '../../services/json-converter.service';
 
 @Component({
   selector: 'app-json-formatter-page',
@@ -41,9 +43,12 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
 
   private copyTimer: any = null;
 
+  @ViewChild('inputContainer') inputContainer!: ElementRef;
   @ViewChild('outputContainer') outputContainer!: ElementRef;
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
-  isFullscreen = false;
+  isFullscreenInput = false;
+  isFullscreenOutput = false;
 
   
 
@@ -55,16 +60,21 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
 
   ngOnInit() {
     document.addEventListener('fullscreenchange', () => {
-      this.isFullscreen = !!document.fullscreenElement;
+      this.isFullscreenInput = document.fullscreenElement === this.inputContainer?.nativeElement;
+      this.isFullscreenOutput = document.fullscreenElement === this.outputContainer?.nativeElement;
       this.cdr.markForCheck();
     });
   }
 
 
-  toggleFullscreen() {
-    const elem = this.outputContainer.nativeElement;
+  /* ===============================
+     FULLSCREEN - INPUT
+  =============================== */
 
-    if (!this.isFullscreen) {
+  toggleFullscreenInput() {
+    const elem = this.inputContainer.nativeElement;
+
+    if (!this.isFullscreenInput) {
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
       }
@@ -75,6 +85,167 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     }
   }
 
+
+  /* ===============================
+     FULLSCREEN - OUTPUT
+  =============================== */
+
+  toggleFullscreenOutput() {
+    const elem = this.outputContainer.nativeElement;
+
+    if (!this.isFullscreenOutput) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
+
+  /* ===============================
+     FILE UPLOAD
+  =============================== */
+
+  triggerFileUpload(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+
+      if (!file.name.endsWith('.json')) {
+        this.store.error.set('Please upload a .json file');
+        setTimeout(() => this.store.error.set(null), 2000);
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        const content = e.target.result;
+
+        try {
+          // Validate JSON
+          JSON.parse(content);
+          this.store.setInput(content);
+          this.analytics.track(ANALYTICS_EVENTS.JSON_FILE_UPLOAD);
+        } catch (err: any) {
+          this.store.error.set('Invalid JSON file: ' + err.message);
+          setTimeout(() => this.store.error.set(null), 3000);
+        }
+      };
+
+      reader.onerror = () => {
+        this.store.error.set('Failed to read file');
+        setTimeout(() => this.store.error.set(null), 2000);
+      };
+
+      reader.readAsText(file);
+    }
+
+    // Reset input
+    input.value = '';
+  }
+
+
+  /* ===============================
+     UNDO / REDO
+  =============================== */
+
+  onUndo(): void {
+    this.store.undo();
+    this.analytics.track(ANALYTICS_EVENTS.JSON_UNDO);
+  }
+
+  onRedo(): void {
+    this.store.redo();
+    this.analytics.track(ANALYTICS_EVENTS.JSON_REDO);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardShortcuts(event: KeyboardEvent): void {
+    
+    // Ctrl+Z - Undo
+    if (event.ctrlKey && event.key === 'z' && !event.shiftKey) {
+      event.preventDefault();
+      if (this.store.canUndo()) {
+        this.onUndo();
+      }
+    }
+
+    // Ctrl+Y or Ctrl+Shift+Z - Redo
+    if ((event.ctrlKey && event.key === 'y') || (event.ctrlKey && event.shiftKey && event.key === 'z')) {
+      event.preventDefault();
+      if (this.store.canRedo()) {
+        this.onRedo();
+      }
+    }
+
+  }
+
+
+  /* ===============================
+     PRINT INPUT
+  =============================== */
+
+  printInput(): void {
+    const content = this.store.input();
+
+    if (!content) return;
+
+    const printWindow = window.open('', '_blank');
+    
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>JSON Print</title>
+          <style>
+            body {
+              font-family: 'JetBrains Mono', 'Fira Code', monospace;
+              font-size: 12px;
+              line-height: 1.6;
+              padding: 20px;
+              white-space: pre-wrap;
+              word-wrap: break-word;
+            }
+          </style>
+        </head>
+        <body>${content}</body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+
+    this.analytics.track(ANALYTICS_EVENTS.JSON_PRINT);
+  }
+
+
+  /* ===============================
+     CONVERSION
+  =============================== */
+
+  onConvert(format: ConversionFormat | null): void {
+    this.store.convert(format);
+    
+    if (format) {
+      this.analytics.track(`json_convert_${format}`);
+    }
+  }
 
 
   /* ===============================
@@ -93,18 +264,18 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
 
       // Set copied = true
       this.copied = true;
-      this.cdr.markForCheck(); // ✅ Force UI update
+      this.cdr.markForCheck();
 
       // Clear old timer
       if (this.copyTimer) {
         clearTimeout(this.copyTimer);
       }
 
-      // Reset after 3 seconds
+      // Reset after 2 seconds
       this.copyTimer = setTimeout(() => {
 
         this.copied = false;
-        this.cdr.markForCheck(); // ✅ Update again
+        this.cdr.markForCheck();
 
       }, 2000);
 
