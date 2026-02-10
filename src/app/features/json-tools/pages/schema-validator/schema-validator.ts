@@ -1,6 +1,8 @@
 import { Component, WritableSignal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AnalyticsService } from '../../../../core/analytics/analytics.service';
+import { ANALYTICS_EVENTS } from '../../../../core/analytics/analytics-events';
 
 interface ValidationError {
   path: string;
@@ -22,6 +24,10 @@ export class SchemaValidatorPage {
   validationResult: WritableSignal<'valid' | 'invalid' | null> = signal(null);
   errors: WritableSignal<ValidationError[]> = signal([]);
   errorMessage: WritableSignal<string> = signal('');
+
+  constructor(
+    private analytics: AnalyticsService 
+  ) {}
   
   validate(): void {
     this.errorMessage.set('');
@@ -192,6 +198,9 @@ export class SchemaValidatorPage {
       const json = JSON.parse(this.jsonInput());
       const schema = this.inferSchema(json);
       this.schemaInput.set(JSON.stringify(schema, null, 2));
+
+      this.analytics.track(ANALYTICS_EVENTS.JSON_SCHEMA_VALIDATE);
+
     } catch (err) {
       this.errorMessage.set('Invalid JSON: ' + (err as Error).message);
     }
