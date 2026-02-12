@@ -1,0 +1,55 @@
+<div class="settings-chips">
+  
+  <!-- Label -->
+  <span class="chips-label">Active Formatting:</span>
+
+  <!-- Preset Selection -->
+  <div class="preset-chips">
+    @for (preset of presets; track preset.name) {
+      <button 
+        class="preset-chip"
+        [class.active]="currentPreset === preset.name"
+        (click)="onPresetClick(preset.name)"
+        [title]="'Switch to ' + preset.label">
+        {{ preset.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Settings Chips -->
+  <div class="option-chips">
+    
+    <!-- Indentation -->
+    <span class="chip chip-primary" title="Indentation style">
+      <i class="fa-solid fa-indent"></i>
+      {{ getIndentLabel(options.indentation) }}
+    </span>
+
+    <!-- Sort Keys -->
+    <span 
+      class="chip" 
+      [class.chip-success]="options.sortKeys"
+      [class.chip-muted]="!options.sortKeys"
+      title="Sort object keys alphabetically">
+      <i class="fa-solid" [class.fa-arrow-down-a-z]="options.sortKeys" [class.fa-xmark]="!options.sortKeys"></i>
+      Sort Keys {{ options.sortKeys ? 'ON' : 'OFF' }}
+    </span>
+
+    <!-- Array Formatting -->
+    <span class="chip chip-info" [title]="getArrayLabel(options.compactArrays)">
+      <i class="fa-solid fa-brackets-square"></i>
+      {{ getArrayLabel(options.compactArrays) }}
+    </span>
+
+  </div>
+
+  <!-- Reset Button -->
+  <button 
+    class="reset-btn"
+    (click)="resetToDefaults.emit()"
+    title="Reset to default settings">
+    <i class="fa-solid fa-rotate-left"></i>
+    Reset
+  </button>
+
+</div>

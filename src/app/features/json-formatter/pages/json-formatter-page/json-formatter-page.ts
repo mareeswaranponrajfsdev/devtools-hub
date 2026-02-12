@@ -10,16 +10,18 @@ import {
 } from '@angular/core';
 
 import { JsonFormatterStore } from '../../state/json-formatter.store';
-
 import { Editor } from '../../components/editor/editor';
 import { Toolbar } from '../../components/toolbar/toolbar';
 import { TreeView } from '../../components/tree-view/tree-view';
 import { FormatterOptionsComponent } from '../../components/formatter-options/formatter-options';
+import { FormatSettingsChips } from '../../components/format-settings-chips/format-settings-chips';
+import { ImportMenu, ImportAction } from '../../components/import-menu/import-menu';
 import { CommonModule } from '@angular/common';
 import { AnalyticsService } from '../../../../core/analytics/analytics.service';
 import { ANALYTICS_EVENTS } from '../../../../core/analytics/analytics-events';
 import { ConversionFormat } from '../../services/json-converter.service';
 import { FormatterOptions } from '../../models/formatter-options.model';
+import { FormatterPreset } from '../../models/formatter-presets.model';
 
 @Component({
   selector: 'app-json-formatter-page',
@@ -30,6 +32,8 @@ import { FormatterOptions } from '../../models/formatter-options.model';
     Toolbar,
     TreeView,
     FormatterOptionsComponent,
+    FormatSettingsChips,
+    ImportMenu,
     CommonModule 
   ],
 
@@ -43,17 +47,13 @@ import { FormatterOptions } from '../../models/formatter-options.model';
 export class JsonFormatterPage implements OnDestroy, OnInit {
 
   copied = false;
-
   private copyTimer: any = null;
 
   @ViewChild('inputContainer') inputContainer!: ElementRef;
   @ViewChild('outputContainer') outputContainer!: ElementRef;
-  @ViewChild('fileInput') fileInput!: ElementRef;
 
   isFullscreenInput = false;
   isFullscreenOutput = false;
-  isConvertOpen = false;
-  
 
   constructor(
     public readonly store: JsonFormatterStore,
@@ -69,29 +69,6 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     });
   }
 
-  toggleConvertDropdown(event: MouseEvent) {
-    this.isConvertOpen = !this.isConvertOpen;
-  }
-
-  onConvertSelect(event: Event) {
-    const value = (event.target as HTMLSelectElement).value;
-
-    if (value === 'reset') {
-      this.onConvert(null);
-    } else if (value) {
-      this.onConvert(value as 'xml' | 'csv' | 'yaml');
-    }
-
-    // Reset select back to placeholder
-    (event.target as HTMLSelectElement).value = '';
-  }
-
-
-
-  /* ===============================
-     FULLSCREEN - INPUT
-  =============================== */
-
   toggleFullscreenInput() {
     const elem = this.inputContainer.nativeElement;
 
@@ -105,11 +82,6 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
       }
     }
   }
-
-
-  /* ===============================
-     FULLSCREEN - OUTPUT
-  =============================== */
 
   toggleFullscreenOutput() {
     const elem = this.outputContainer.nativeElement;
@@ -125,60 +97,6 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     }
   }
 
-
-  /* ===============================
-     FILE UPLOAD
-  =============================== */
-
-  triggerFileUpload(): void {
-    this.fileInput.nativeElement.click();
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-
-      if (!file.name.endsWith('.json')) {
-        this.store.error.set('Please upload a .json file');
-        setTimeout(() => this.store.error.set(null), 2000);
-        return;
-      }
-
-      const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        const content = e.target.result;
-
-        try {
-          // Validate JSON
-          JSON.parse(content);
-          this.store.setInput(content);
-          this.analytics.track(ANALYTICS_EVENTS.JSON_FILE_UPLOAD);
-        } catch (err: any) {
-          this.store.error.set('Invalid JSON file: ' + err.message);
-          setTimeout(() => this.store.error.set(null), 3000);
-        }
-      };
-
-      reader.onerror = () => {
-        this.store.error.set('Failed to read file');
-        setTimeout(() => this.store.error.set(null), 2000);
-      };
-
-      reader.readAsText(file);
-    }
-
-    // Reset input
-    input.value = '';
-  }
-
-
-  /* ===============================
-     UNDO / REDO
-  =============================== */
-
   onUndo(): void {
     this.store.undo();
     this.analytics.track(ANALYTICS_EVENTS.JSON_UNDO);
@@ -191,8 +109,6 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardShortcuts(event: KeyboardEvent): void {
-    
-    // Ctrl+Z - Undo
     if (event.ctrlKey && event.key === 'z' && !event.shiftKey) {
       event.preventDefault();
       if (this.store.canUndo()) {
@@ -200,20 +116,13 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
       }
     }
 
-    // Ctrl+Y or Ctrl+Shift+Z - Redo
     if ((event.ctrlKey && event.key === 'y') || (event.ctrlKey && event.shiftKey && event.key === 'z')) {
       event.preventDefault();
       if (this.store.canRedo()) {
         this.onRedo();
       }
     }
-
   }
-
-
-  /* ===============================
-     PRINT INPUT
-  =============================== */
 
   printInput(): void {
     const content = this.store.input();
@@ -255,37 +164,32 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     this.analytics.track(ANALYTICS_EVENTS.JSON_PRINT);
   }
 
-
-  /* ===============================
-     CONVERSION
-  =============================== */
-
   onConvert(format: ConversionFormat | null): void {
     this.store.convert(format);
     
     if (format) {
       this.analytics.track(`json_convert_${format}`);
     }
-
-    this.isConvertOpen = false;
   }
-
-
-  /* ===============================
-     FORMATTER OPTIONS
-  =============================== */
 
   onOptionsChange(options: FormatterOptions): void {
     this.store.updateOptions(options);
   }
 
+  onPresetApplied(preset: FormatterPreset): void {
+    this.store.applyPreset(preset);
+  }
 
-  /* ===============================
-     COPY
-  =============================== */
+  onResetSettings(): void {
+    this.store.resetToDefaults();
+  }
+
+  async onImport(action: ImportAction): Promise<void> {
+    await this.store.handleImport(action);
+    this.cdr.markForCheck();
+  }
 
   copyOutput(): void {
-
     const text = this.store.output();
 
     if (!text) {
@@ -293,39 +197,23 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     }
 
     navigator.clipboard.writeText(text).then(() => {
-
-      // Set copied = true
       this.copied = true;
       this.cdr.markForCheck();
 
-      // Clear old timer
       if (this.copyTimer) {
         clearTimeout(this.copyTimer);
       }
 
-      // Reset after 2 seconds
       this.copyTimer = setTimeout(() => {
-
         this.copied = false;
         this.cdr.markForCheck();
-
       }, 2000);
-
     }).catch(() => {
-
       alert('Copy failed. Please copy manually.');
-
     });
-
   }
 
-
-  /* ===============================
-     DOWNLOAD JSON
-  =============================== */
-
   downloadJson(): void {
-
     const text = this.store.output();
 
     if (!text) return;
@@ -335,16 +223,9 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     });
 
     this.downloadFile(blob, 'formatted.json');
-
   }
 
-
-  /* ===============================
-     DOWNLOAD TXT
-  =============================== */
-
   downloadTxt(): void {
-
     const text = this.store.output();
 
     if (!text) return;
@@ -354,79 +235,56 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     });
 
     this.downloadFile(blob, 'formatted.txt');
-
   }
-
-
-  /* ===============================
-     COMMON DOWNLOAD
-  =============================== */
 
   private downloadFile(blob: Blob, fileName: string): void {
-
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement('a');
-
     a.href = url;
     a.download = fileName;
-
     a.click();
-
     URL.revokeObjectURL(url);
-
   }
 
-
-  /* ===============================
-     CLEANUP
-  =============================== */
-
   ngOnDestroy(): void {
-
     if (this.copyTimer) {
       clearTimeout(this.copyTimer);
     }
-
   }
 
   loadSample(): void {
-
     const sampleJson = `{
-      "requestId": "REQ-10001",
-      "status": "success",
-      "timestamp": "2026-02-06T12:00:00Z",
-      "data": {
-        "user": {
-          "id": 1,
-          "username": "test",
-          "email": "test@example.com",
-          "mobile": "+91-9000000000",
-          "active": true
-        },
-        "profile": {
-          "role": "User",
-          "department": "Engineering",
-          "location": "India"
-        },
-        "settings": {
-          "notifications": true,
-          "theme": "light",
-          "language": "en"
-        }
-      },
-      "meta": {
-        "version": "1.0",
-        "source": "api",
-        "responseTimeMs": 95
-      }
-    }`;
+  "requestId": "REQ-10001",
+  "status": "success",
+  "timestamp": "2026-02-06T12:00:00Z",
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "test",
+      "email": "test@example.com",
+      "mobile": "+91-9000000000",
+      "active": true
+    },
+    "profile": {
+      "role": "User",
+      "department": "Engineering",
+      "location": "India"
+    },
+    "settings": {
+      "notifications": true,
+      "theme": "light",
+      "language": "en"
+    }
+  },
+  "meta": {
+    "version": "1.0",
+    "source": "api",
+    "responseTimeMs": 95
+  }
+}`;
 
     this.store.setInput(sampleJson);
-
-    // Auto format
     this.onFormat();
-
   }
 
   onFormat(): void {
@@ -438,7 +296,4 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     this.store.minify();
     this.analytics.track(ANALYTICS_EVENTS.JSON_MINIFY);
   }
-
-
-
 }

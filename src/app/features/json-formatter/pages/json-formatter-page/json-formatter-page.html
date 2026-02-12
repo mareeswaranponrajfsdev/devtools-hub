@@ -1,13 +1,5 @@
 <div class="container py-3">
 
-  <!-- Hidden File Input -->
-  <input
-    #fileInput
-    type="file"
-    accept=".json"
-    style="display: none;"
-    (change)="onFileSelected($event)">
-
   <!-- Toolbar -->
   <app-json-toolbar
     [live]="store.liveMode()"
@@ -26,31 +18,45 @@
     (optionsChange)="onOptionsChange($event)">
   </app-json-toolbar>
 
+  <!-- Active Formatting Settings Chips -->
+  <!-- <app-format-settings-chips
+    [options]="store.formatterOptions()"
+    [currentPreset]="store.currentPreset()"
+    (resetToDefaults)="onResetSettings()"
+    (applyPreset)="onPresetApplied($event)">
+  </app-format-settings-chips> -->
+
+  <!-- Processing Indicator -->
+  @if (store.isProcessing()) {
+    <div class="processing-indicator">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      Processing...
+    </div>
+  }
+
+  <!-- Message -->
+  @if (store.error() && !store.isProcessing()) {
+    <div
+      class="alert"
+      [class.alert-success]="store.error()?.includes('✓')"
+      [class.alert-danger]="store.error()?.includes('✗') || (!store.error()?.includes('✓') && store.error()?.includes('Invalid'))"
+      [class.alert-info]="store.error()?.includes('Importing')">
+
+      <i
+        class="fa-solid"
+        [class.fa-circle-check]="store.error()?.includes('✓')"
+        [class.fa-circle-exclamation]="store.error()?.includes('✗') || store.error()?.includes('Invalid')"
+        [class.fa-circle-info]="store.error()?.includes('Importing')">
+      </i>
+
+      {{ store.error() }}
+
+    </div>
+  }
 
   <!-- Editors -->
   <div class="row g-3">
     
-    <!-- Message -->
-    @if (store.error()) {
-
-      <div
-        class="alert mt-3"
-        [class.alert-success]="store.error()?.includes('Valid') || store.error()?.includes('auto-fixed')"
-        [class.alert-danger]="!store.error()?.includes('Valid') && !store.error()?.includes('auto-fixed')">
-
-        <i
-          class="fa-solid me-2"
-          [class.fa-circle-check]="store.error()?.includes('Valid') || store.error()?.includes('auto-fixed')"
-          [class.fa-circle-exclamation]="!store.error()?.includes('Valid') && !store.error()?.includes('auto-fixed')">
-        </i>
-
-        {{ store.error() }}
-
-      </div>
-
-    }
-
-
     <!-- INPUT -->
     <div class="col-12 col-lg-6">
 
@@ -62,6 +68,11 @@
           <h6 class="editor-title">Input JSON</h6>
 
           <div class="input-actions">
+
+            <!-- Import Menu -->
+            <app-import-menu
+              (importAction)="onImport($event)">
+            </app-import-menu>
 
             <!-- Undo -->
             <button
@@ -81,15 +92,6 @@
               (click)="onRedo()"
               title="Redo (Ctrl+Y)">
               <i class="fa-solid fa-redo"></i>
-            </button>
-
-            <!-- Upload File -->
-            <button
-              class="action-btn"
-              type="button"
-              (click)="triggerFileUpload()"
-              title="Upload JSON file">
-              <i class="fa-solid fa-file-arrow-up"></i>
             </button>
 
             <!-- Print -->
@@ -128,7 +130,6 @@
 
         </div>
 
-
         <div class="editor-wrapper">
           <app-json-editor
             [value]="store.input()"
@@ -140,7 +141,6 @@
       </div>
 
     </div>
-
 
     <!-- OUTPUT -->
     <div class="col-12 col-lg-6">
@@ -162,21 +162,37 @@
 
             <!-- Convert Dropdown -->
             @if (!store.treeView()) {
-
-              <select
-                class="convert-select"
-                [disabled]="!store.output()"
-                (change)="onConvertSelect($event)"
-              >
-                <option value="">Convert</option>
-                <option value="xml">JSON → XML</option>
-                <option value="csv">JSON → CSV</option>
-                <option value="yaml">JSON → YAML</option>
-
-                @if (store.currentConversion()) {
-                  <option value="reset">Back to JSON</option>
-                }
-              </select>
+              <div class="convert-dropdown">
+                <button
+                  class="action-btn convert-btn"
+                  type="button"
+                  [disabled]="!store.output()"
+                  title="Convert JSON">
+                  <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                  Convert
+                  <i class="fa-solid fa-caret-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <button (click)="onConvert('xml')">
+                    <i class="fa-solid fa-code"></i>
+                    JSON → XML
+                  </button>
+                  <button (click)="onConvert('csv')">
+                    <i class="fa-solid fa-table"></i>
+                    JSON → CSV
+                  </button>
+                  <button (click)="onConvert('yaml')">
+                    <i class="fa-solid fa-file-code"></i>
+                    JSON → YAML
+                  </button>
+                  @if (store.currentConversion()) {
+                    <button (click)="onConvert(null)" class="reset-btn">
+                      <i class="fa-solid fa-rotate-left"></i>
+                      Back to JSON
+                    </button>
+                  }
+                </div>
+              </div>
             }
 
             <!-- Fullscreen -->
@@ -232,7 +248,6 @@
 
         </div>
 
-
         <div class="output-wrapper">
 
           @if (store.treeView()) {
@@ -258,6 +273,5 @@
     </div>
 
   </div>
-
 
 </div>
