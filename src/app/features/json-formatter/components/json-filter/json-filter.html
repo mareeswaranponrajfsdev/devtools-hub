@@ -1,0 +1,81 @@
+<div class="filter-container">
+  <button
+    class="tool-btn filter-trigger"
+    [class.active]="isActive()"
+    (click)="toggle()"
+    type="button"
+    title="Filter JSON">
+    <i class="fa-solid fa-filter"></i>
+  </button>
+
+  @if (isOpen()) {
+    <div class="filter-overlay" (click)="close()"></div>
+    
+    <div class="filter-panel">
+      <div class="filter-header">
+        <h4>Filter JSON</h4>
+        <button class="close-btn" (click)="close()" type="button">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+
+      <div class="filter-body">
+        
+        <div class="filter-group">
+          <label>Filter by Key Name</label>
+          <input
+            type="text"
+            class="filter-input"
+            placeholder="e.g., username, id"
+            [(ngModel)]="keyFilter"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label>Filter by Value</label>
+          <input
+            type="text"
+            class="filter-input"
+            placeholder="e.g., active, true"
+            [(ngModel)]="valueFilter"
+          />
+        </div>
+
+        <div class="filter-options">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="caseSensitive()"
+              (change)="toggleCaseSensitive()"
+            />
+            <span>Case Sensitive</span>
+          </label>
+        </div>
+
+        <div class="filter-actions">
+          <button
+            class="btn btn-primary"
+            (click)="applyFilter()"
+            type="button">
+            <i class="fa-solid fa-filter"></i>
+            Apply Filter
+          </button>
+
+          <button
+            class="btn btn-secondary"
+            (click)="resetFilter()"
+            type="button">
+            <i class="fa-solid fa-rotate-left"></i>
+            Reset
+          </button>
+        </div>
+
+        <div class="filter-help">
+          <i class="fa-solid fa-info-circle"></i>
+          Shows only matching keys/values. Original JSON is preserved.
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

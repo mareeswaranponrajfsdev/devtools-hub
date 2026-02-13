@@ -1,0 +1,27 @@
+.trust-strip {
+  display: flex;
+  justify-content: center;
+  gap: 2.50rem;
+
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748b;
+
+  padding: 4px 0;
+  margin-top: -15px;        /* visually sticks to header */
+  border-bottom: 1px solid #f1f2f4;
+
+  white-space: nowrap;
+  box-shadow: 0 1px 2px #f1f2f4;
+}
+
+.trust-strip span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trust-strip i {
+  font-size: 0.7rem;
+  color: #22c55e;
+}

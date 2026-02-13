@@ -7,13 +7,11 @@ import { FormatterOptions, DEFAULT_FORMATTER_OPTIONS } from '../models/formatter
 import { FormatterPreset, FORMATTER_PRESETS } from '../models/formatter-presets.model';
 import { ImportAction } from '../components/import-menu/import-menu';
 
-interface HistoryEntry {
-  value: string;
-  timestamp: number;
-}
+interface HistoryEntry { value: string; timestamp: number; }
 
 const STORAGE_KEY = 'json-formatter-options';
-const PRESET_KEY = 'json-formatter-preset';
+const PRESET_KEY  = 'json-formatter-preset';
+const JSONBIN_API = 'https://api.jsonbin.io/v3/b';
 
 @Injectable()
 export class JsonFormatterStore {
@@ -22,354 +20,387 @@ export class JsonFormatterStore {
     private engine: JsonEngine,
     private autoFix: JsonAutoFix,
     private converter: JsonConverterService,
-    private fileImport: FileImportService
+    private fileImport: FileImportService,
   ) {
     this.loadOptionsFromStorage();
     this.loadPresetFromStorage();
   }
 
-  /* ================= STATE ================= */
-
-  input = signal<string>('');
-  output = signal<string>('');
-  error = signal<string | null>(null);
-  liveMode = signal<boolean>(false);
-  treeView = signal<boolean>(false);
+  /* ── STATE ── */
+  input             = signal<string>('');
+  output            = signal<string>('');
+  error             = signal<string | null>(null);
+  liveMode          = signal<boolean>(false);
+  treeView          = signal<boolean>(false);
   currentConversion = signal<ConversionFormat | null>(null);
-  formatterOptions = signal<FormatterOptions>(DEFAULT_FORMATTER_OPTIONS);
-  currentPreset = signal<FormatterPreset>('default');
-  isProcessing = signal<boolean>(false);
+  formatterOptions  = signal<FormatterOptions>(DEFAULT_FORMATTER_OPTIONS);
+  currentPreset     = signal<FormatterPreset>('default');
+  isProcessing      = signal<boolean>(false);
+  filterActive      = signal<boolean>(false);
+  originalOutput    = signal<string>('');
+  originalJsonOutput = signal<string>('');  // Store JSON before conversion
+  showTransform     = signal<boolean>(false);
+  cloudBinUrl       = signal<string | null>(null);
 
   private history: HistoryEntry[] = [];
   private historyIndex = -1;
-  private maxHistorySize = 50;
+  private readonly MAX_HIST = 50;
+  private successTimer: any = null;
 
   canUndo = signal<boolean>(false);
   canRedo = signal<boolean>(false);
 
-  /* ================= COMPUTED ================= */
-
+  /* ── COMPUTED ── */
   charCount = computed(() => this.input().length);
+  lineCount = computed(() => this.input() ? this.input().split('\n').length : 0);
+  fileSize  = computed(() => (new Blob([this.input()]).size / 1024).toFixed(2));
 
-  lineCount = computed(() => {
-    if (!this.input()) return 0;
-    return this.input().split('\n').length;
-  });
+  /* ── SMART MESSAGE HELPERS ── */
+  /**
+   * Success messages auto-clear after 3 s.
+   * Error messages (✗ / "Invalid") stay until resolved.
+   */
+  setMessage(msg: string): void {
+    this.error.set(msg);
+    if (this.successTimer) { clearTimeout(this.successTimer); this.successTimer = null; }
+    const isSuccess = msg.startsWith('✓') || msg.startsWith('☁️') || msg.startsWith('📤') ||
+                      msg.includes('Importing') || msg.includes('auto-fixed') || msg.includes('valid');
+    if (isSuccess) {
+      this.successTimer = setTimeout(() => { this.error.set(null); this.successTimer = null; }, 3000);
+    }
+  }
 
-  fileSize = computed(() => {
-    return (new Blob([this.input()]).size / 1024).toFixed(2);
-  });
+  clearMessage(): void {
+    if (this.successTimer) { clearTimeout(this.successTimer); this.successTimer = null; }
+    this.error.set(null);
+  }
 
-  /* ================= ACTIONS ================= */
-
-  setInput(value: string, addToHistory = true) {
+  /* ── INPUT ── */
+  setInput(value: string, addHistory = true): void {
     this.input.set(value);
-
-    if (addToHistory) {
-      this.addToHistory(value);
-    }
-
-    if (this.liveMode()) {
-      this.validate();
-    }
+    if (addHistory) this.addToHistory(value);
+    if (this.liveMode()) this.validate();
   }
+  toggleLive():     void { this.liveMode.update(v => !v); }
+  toggleTreeView(): void { this.treeView.update(v => !v); }
 
-  toggleLive() {
-    this.liveMode.update(v => !v);
-  }
-
-  toggleTreeView() {
-    this.treeView.update(v => !v);
-  }
-
-  // -------- Formatter Options --------
-  updateOptions(options: FormatterOptions) {
+  /* ── FORMATTER OPTIONS ── */
+  updateOptions(options: FormatterOptions): void {
     this.formatterOptions.set(options);
     this.currentPreset.set('custom');
     this.saveOptionsToStorage(options);
     this.savePresetToStorage('custom');
   }
-
-  applyPreset(preset: FormatterPreset) {
-    const presetConfig = FORMATTER_PRESETS[preset];
-    this.formatterOptions.set({ ...presetConfig.options });
+  applyPreset(preset: FormatterPreset): void {
+    const cfg = FORMATTER_PRESETS[preset];
+    this.formatterOptions.set({ ...cfg.options });
     this.currentPreset.set(preset);
-    this.saveOptionsToStorage(presetConfig.options);
+    this.saveOptionsToStorage(cfg.options);
     this.savePresetToStorage(preset);
   }
+  resetToDefaults(): void { this.applyPreset('default'); }
 
-  resetToDefaults() {
-    this.applyPreset('default');
+  private saveOptionsToStorage(o: FormatterOptions): void { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(o)); } catch {} }
+  private savePresetToStorage(p: FormatterPreset): void   { try { localStorage.setItem(PRESET_KEY, p); } catch {} }
+  private loadOptionsFromStorage(): void {
+    try { const s = localStorage.getItem(STORAGE_KEY); if (s) this.formatterOptions.set({ ...DEFAULT_FORMATTER_OPTIONS, ...JSON.parse(s) }); } catch {}
+  }
+  private loadPresetFromStorage(): void {
+    try { const s = localStorage.getItem(PRESET_KEY); if (s && s in FORMATTER_PRESETS) this.currentPreset.set(s as FormatterPreset); } catch {}
   }
 
-  private saveOptionsToStorage(options: FormatterOptions) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(options));
-    } catch (e) {
-      console.error('Failed to save formatter options:', e);
-    }
-  }
-
-  private savePresetToStorage(preset: FormatterPreset) {
-    try {
-      localStorage.setItem(PRESET_KEY, preset);
-    } catch (e) {
-      console.error('Failed to save preset:', e);
-    }
-  }
-
-  private loadOptionsFromStorage() {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const options = JSON.parse(stored);
-        this.formatterOptions.set({ ...DEFAULT_FORMATTER_OPTIONS, ...options });
-      }
-    } catch (e) {
-      console.error('Failed to load formatter options:', e);
-    }
-  }
-
-  private loadPresetFromStorage() {
-    try {
-      const stored = localStorage.getItem(PRESET_KEY);
-      if (stored && stored in FORMATTER_PRESETS) {
-        this.currentPreset.set(stored as FormatterPreset);
-      }
-    } catch (e) {
-      console.error('Failed to load preset:', e);
-    }
-  }
-
-  // -------- Format --------
-  format() {
+  /* ── FORMAT / MINIFY ── */
+  format(): void {
     this.currentConversion.set(null);
-
-    try {
-      const result = this.engine.format(this.input(), this.formatterOptions());
-      this.output.set(result);
-      this.error.set(null);
-    } catch (err: any) {
-      this.handleError(err);
-    }
+    try { this.output.set(this.engine.format(this.input(), this.formatterOptions())); this.error.set(null); this.originalJsonOutput.set(''); }
+    catch (err: any) { this.handleError(err); }
   }
-
-  // -------- Minify --------
-  minify() {
+  minify(): void {
     this.currentConversion.set(null);
-
-    try {
-      const result = this.engine.minify(this.input());
-      this.output.set(result);
-      this.error.set(null);
-    } catch (err: any) {
-      this.handleError(err);
-    }
+    try { this.output.set(this.engine.minify(this.input())); this.error.set(null); this.originalJsonOutput.set(''); }
+    catch (err: any) { this.handleError(err); }
   }
 
-  // -------- Enhanced Auto Fix --------
+  /* ── AUTO FIX ── */
   autoFixJson(): void {
     const input = this.input().trim();
-
-    if (!input) {
-      this.error.set('Please enter JSON first');
-      return;
-    }
-
+    if (!input) { this.setMessage('✗ Please enter JSON first'); return; }
     this.isProcessing.set(true);
-
     setTimeout(() => {
       const result: AutoFixResult = this.autoFix.fix(input);
-
       this.isProcessing.set(false);
-
       if (result.success) {
         if (result.changes.includes('No fixes needed')) {
-          this.error.set('✓ No fixes needed - JSON is already valid');
+          this.setMessage('✓ No fixes needed — JSON is already valid');
         } else {
           this.setInput(result.fixed);
           this.format();
-          const changesList = result.changes.join(', ');
-          this.error.set(`✓ JSON auto-fixed: ${changesList}`);
+          this.setMessage(`✓ JSON auto-fixed: ${result.changes.join(', ')}`);
         }
-        this.autoClearMessage();
-      } else {
-        this.error.set(`✗ Auto-fix failed: ${result.error}`);
-      }
+      } else { this.setMessage(`✗ Auto-fix failed: ${result.error}`); }
     }, 100);
   }
 
-  // -------- Validate --------
+  /* ── VALIDATE ── */
   validate(): void {
     const input = this.input().trim();
-
-    if (!input) {
-      this.error.set('Please enter JSON first');
-      return;
-    }
-
-    try {
-      JSON.parse(input);
-      this.error.set('JSON is Valid');
-      this.autoClearMessage();
-    } catch (err: any) {
-      this.error.set('Invalid JSON: ' + err.message);
-    }
+    if (!input) { this.setMessage('✗ Please enter JSON first'); return; }
+    try { JSON.parse(input); this.setMessage('✓ JSON is valid'); }
+    catch (err: any) { this.error.set('✗ Invalid JSON: ' + err.message); }
   }
 
-  private autoClearMessage(): void {
-    setTimeout(() => {
-      this.error.set(null);
-    }, 3000);
+  /* ── CLEAR / COPY ── */
+  clear(): void {
+    this.setInput(''); this.output.set(''); this.error.set(null);
+    this.currentConversion.set(null); this.filterActive.set(false);
+    this.originalOutput.set(''); this.cloudBinUrl.set(null);
+    if (this.successTimer) { clearTimeout(this.successTimer); this.successTimer = null; }
   }
+  copy(): void { if (this.output()) navigator.clipboard.writeText(this.output()); }
 
-  // -------- Clear --------
-  clear() {
-    this.setInput('');
-    this.output.set('');
-    this.error.set(null);
-    this.currentConversion.set(null);
-  }
-
-  // -------- Copy Output --------
-  copy() {
-    if (!this.output()) return;
-    navigator.clipboard.writeText(this.output());
-  }
-
-  // -------- File Import --------
+  /* ── IMPORT ── */
   async handleImport(action: ImportAction): Promise<void> {
     this.isProcessing.set(true);
-    this.error.set('Importing...');
-
+    this.error.set('Importing…');
     try {
-      let result;
-
-      if (action.type === 'file' && action.file) {
-        result = await this.fileImport.importFromFile(action.file);
-      } else if (action.type === 'url' && action.url) {
-        result = await this.fileImport.importFromUrl({ url: action.url });
-      } else if (action.type === 'csv' && action.file) {
-        result = await this.fileImport.importFromCsv(action.file);
-      } else {
-        throw new Error('Invalid import action');
-      }
-
+      let result: any;
+      if      (action.type === 'file' && action.file) result = await this.fileImport.importFromFile(action.file);
+      else if (action.type === 'url'  && action.url)  result = await this.fileImport.importFromUrl({ url: action.url });
+      else if (action.type === 'csv'  && action.file) result = await this.fileImport.importFromCsv(action.file);
+      else throw new Error('Invalid import action');
       this.isProcessing.set(false);
-
       if (result.success && result.data) {
         this.setInput(result.data);
-        this.error.set(`✓ Imported from ${result.fileName || 'source'}`);
-        
-        // Auto-format after successful import
-        setTimeout(() => {
-          try {
-            this.format();
-          } catch {
-            // If format fails, just leave the raw imported data
-          }
-        }, 100);
-
-        this.autoClearMessage();
-      } else {
-        this.error.set(`✗ Import failed: ${result.error}`);
-      }
-    } catch (error: any) {
-      this.isProcessing.set(false);
-      this.error.set(`✗ Import error: ${error.message}`);
-    }
+        this.setMessage(`✓ Imported from ${result.fileName || 'source'}`);
+        setTimeout(() => { try { this.format(); } catch {} }, 100);
+      } else { this.error.set(`✗ Import failed: ${result.error}`); }
+    } catch (e: any) { this.isProcessing.set(false); this.error.set(`✗ Import error: ${e.message}`); }
   }
 
-  /* ================= UNDO/REDO ================= */
-
+  /* ── UNDO / REDO ── */
   private addToHistory(value: string): void {
-    if (this.history[this.historyIndex]?.value === value) {
-      return;
-    }
-
+    if (this.history[this.historyIndex]?.value === value) return;
     this.history = this.history.slice(0, this.historyIndex + 1);
-
-    this.history.push({
-      value,
-      timestamp: Date.now()
-    });
-
-    if (this.history.length > this.maxHistorySize) {
-      this.history.shift();
-    } else {
-      this.historyIndex++;
-    }
-
+    this.history.push({ value, timestamp: Date.now() });
+    if (this.history.length > this.MAX_HIST) this.history.shift();
+    else this.historyIndex++;
     this.updateUndoRedoState();
   }
-
   undo(): void {
-    if (this.historyIndex > 0) {
-      this.historyIndex--;
-      const entry = this.history[this.historyIndex];
-      this.input.set(entry.value);
-      this.updateUndoRedoState();
-    }
+    if (this.historyIndex > 0) { this.historyIndex--; this.input.set(this.history[this.historyIndex].value); this.updateUndoRedoState(); }
   }
-
   redo(): void {
-    if (this.historyIndex < this.history.length - 1) {
-      this.historyIndex++;
-      const entry = this.history[this.historyIndex];
-      this.input.set(entry.value);
-      this.updateUndoRedoState();
-    }
+    if (this.historyIndex < this.history.length - 1) { this.historyIndex++; this.input.set(this.history[this.historyIndex].value); this.updateUndoRedoState(); }
   }
-
   private updateUndoRedoState(): void {
     this.canUndo.set(this.historyIndex > 0);
     this.canRedo.set(this.historyIndex < this.history.length - 1);
   }
 
-  /* ================= CONVERSION ================= */
-
+  /* ── CONVERSION ── */
   convert(format: ConversionFormat | null): void {
     if (format === null) {
       this.currentConversion.set(null);
-      this.format();
+      // Restore original JSON
+      if (this.originalJsonOutput()) {
+        this.output.set(this.originalJsonOutput());
+        this.originalJsonOutput.set('');
+      }
       return;
     }
 
-    const output = this.output();
+    // Store original JSON before first conversion
+    if (!this.originalJsonOutput()) {
+      this.originalJsonOutput.set(this.output());
+    }
 
-    if (!output) {
-      this.error.set('Please format JSON first');
+    // Always convert from ORIGINAL JSON, not current output
+    const jsonToConvert = this.originalJsonOutput();
+    if (!jsonToConvert) {
+      this.error.set('✗ Please format JSON first');
       return;
     }
 
     try {
       let converted = '';
-
       switch (format) {
-        case 'xml':
-          converted = this.converter.toXml(output);
-          break;
-        case 'csv':
-          converted = this.converter.toCsv(output);
-          break;
-        case 'yaml':
-          converted = this.converter.toYaml(output);
-          break;
+        case 'xml':  converted = this.converter.toXml(jsonToConvert);  break;
+        case 'csv':  converted = this.converter.toCsv(jsonToConvert);  break;
+        case 'yaml': converted = this.converter.toYaml(jsonToConvert); break;
       }
-
       this.output.set(converted);
       this.currentConversion.set(format);
       this.error.set(null);
     } catch (err: any) {
-      this.error.set(`Conversion failed: ${err.message}`);
+      this.error.set(`✗ Conversion failed: ${err.message}`);
     }
   }
 
-  /* ================= HELPERS ================= */
-
-  private handleError(err: any) {
-    const msg = err?.message || 'Invalid JSON';
-    this.error.set(msg);
-    this.output.set('');
+  /* ── TRANSFORM (JMESPath) ── */
+  openTransform():  void { this.showTransform.set(true);  }
+  closeTransform(): void { this.showTransform.set(false); }
+  applyTransform(resultJson: string): void {
+    this.output.set(resultJson);
+    this.currentConversion.set(null);
+    this.filterActive.set(true);
+    this.setMessage('✓ Transform applied');
   }
+
+  /* ── EXPORT: DISK ── */
+  exportToDisk(): { success: boolean; message: string } {
+    const output = this.output();
+    if (!output) return { success: false, message: 'No formatted output to save' };
+    try {
+      const ext  = this.currentConversion() ?? 'json';
+      const mime = ext === 'json' ? 'application/json' : ext === 'csv' ? 'text/csv' : ext === 'xml' ? 'application/xml' : 'text/plain';
+      this.triggerDownload(output, `export.${ext}`, mime);
+      return { success: true, message: `export.${ext} downloaded` };
+    } catch { return { success: false, message: 'Download failed' }; }
+  }
+
+  /* ── EXPORT: CSV ── */
+  exportToCsv(): { success: boolean; message: string } {
+    const output = this.output();
+    if (!output) return { success: false, message: 'No formatted output' };
+    try {
+      const data = JSON.parse(output);
+
+      // If it's already an array — perfect
+      if (Array.isArray(data)) {
+        if (data.length === 0) return { success: false, message: 'Array is empty — nothing to export' };
+        this.triggerDownload(this.buildCsv(data), 'export.csv', 'text/csv');
+        return { success: true, message: 'export.csv downloaded' };
+      }
+
+      // If it's an object — look for the first array value to export, or do key/value
+      if (typeof data === 'object' && data !== null) {
+        // Try to find a top-level array property
+        for (const key of Object.keys(data)) {
+          if (Array.isArray(data[key]) && data[key].length > 0) {
+            this.triggerDownload(this.buildCsv(data[key]), 'export.csv', 'text/csv');
+            return { success: true, message: `export.csv downloaded (from "${key}" array)` };
+          }
+        }
+        // Fall back to key/value CSV of the flat object
+        const rows = Object.entries(data).map(([k, v]) => ({ key: k, value: typeof v === 'object' ? JSON.stringify(v) : String(v) }));
+        this.triggerDownload(this.buildCsv(rows), 'export.csv', 'text/csv');
+        return { success: true, message: 'export.csv downloaded (key-value pairs)' };
+      }
+
+      return { success: false, message: 'Cannot export this JSON structure to CSV' };
+    } catch (e: any) { return { success: false, message: `CSV failed: ${e.message}` }; }
+  }
+
+  private buildCsv(data: any[]): string {
+    const keys = [...new Set<string>(data.flatMap(o => typeof o === 'object' && o ? Object.keys(o) : []))];
+    const esc  = (v: string) => /[,"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    const str  = (v: any): string => v == null ? '' : typeof v === 'object' ? JSON.stringify(v) : String(v);
+    let csv = keys.map(esc).join(',') + '\n';
+    data.forEach(row => {
+      if (typeof row !== 'object' || row === null) { csv += esc(str(row)) + '\n'; return; }
+      csv += keys.map(k => esc(str(row[k]))).join(',') + '\n';
+    });
+    return csv;
+  }
+
+  private triggerDownload(content: string, filename: string, mime: string): void {
+    const url = URL.createObjectURL(new Blob([content], { type: mime }));
+    const a   = Object.assign(document.createElement('a'), { href: url, download: filename });
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  /* ── EXPORT: SEND TO URL ── */
+  async sendToUrl(url: string): Promise<void> {
+    const output = this.output();
+    if (!output) { this.error.set('✗ No formatted output to send'); return; }
+    let parsed: any;
+    try { parsed = JSON.parse(output); } catch { this.error.set('✗ Output is not valid JSON'); return; }
+    this.isProcessing.set(true);
+    this.error.set(`📤 Sending to ${url}…`);
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(parsed),
+      });
+      this.isProcessing.set(false);
+      if (res.ok) {
+        let detail = '';
+        try { const b = await res.json(); detail = ` — ${JSON.stringify(b).slice(0, 80)}`; } catch {}
+        this.setMessage(`✓ Sent (HTTP ${res.status})${detail}`);
+      } else { this.error.set(`✗ Server responded HTTP ${res.status}: ${res.statusText}`); }
+    } catch (e: any) { this.isProcessing.set(false); this.error.set(`✗ Request failed: ${e.message}`); }
+  }
+
+  /* ── EXPORT: SAVE TO CLOUD ── */
+  async saveToCloud(masterKey?: string): Promise<void> {
+    const output = this.output();
+    if (!output) { this.error.set('✗ No formatted output to save'); return; }
+    let parsed: any;
+    try { parsed = JSON.parse(output); } catch { this.error.set('✗ Output must be valid JSON for cloud save'); return; }
+    this.isProcessing.set(true);
+    this.error.set('☁️ Uploading to JSONBin.io…');
+    this.cloudBinUrl.set(null);
+    const headers: Record<string, string> = {
+      'Content-Type':  'application/json',
+      'X-Bin-Name':    `json-formatter-${Date.now()}`,
+      'X-Bin-Private': masterKey ? 'true' : 'false',
+    };
+    if (masterKey) headers['X-Master-Key'] = masterKey;
+    try {
+      const res  = await fetch(JSONBIN_API, { method: 'POST', headers, body: JSON.stringify(parsed) });
+      const body = await res.json().catch(() => ({}));
+      this.isProcessing.set(false);
+      if (res.ok && body?.metadata?.id) {
+        const binUrl = `https://api.jsonbin.io/v3/b/${body.metadata.id}`;
+        this.cloudBinUrl.set(binUrl);
+        this.setMessage(`✓ Saved! Bin ID: ${body.metadata.id}`);
+      } else { this.error.set(`✗ Cloud save failed: ${body?.message || 'Unknown error'}`); }
+    } catch (e: any) { this.isProcessing.set(false); this.error.set(`✗ Network error: ${e.message}`); }
+  }
+
+  /* ── FILTER ── */
+  applyFilter(options: { keyFilter?: string; valueFilter?: string; caseSensitive?: boolean }): void {
+    try {
+      const base = this.originalOutput() || this.output();
+      if (!base) return;
+      if (!this.originalOutput()) this.originalOutput.set(base);
+      const filtered = this.filterObject(JSON.parse(base), options);
+      this.output.set(JSON.stringify(filtered, null, 2));
+      this.filterActive.set(true);
+    } catch (e: any) { this.error.set('✗ Filter failed: ' + e.message); }
+  }
+  resetFilter(): void {
+    if (this.originalOutput()) this.output.set(this.originalOutput());
+    this.filterActive.set(false); this.originalOutput.set('');
+  }
+  private filterObject(obj: any, opts: any): any {
+    if (Array.isArray(obj)) return obj.map(i => this.filterObject(i, opts)).filter(i => i !== null);
+    if (typeof obj !== 'object' || obj === null) return obj;
+    const cs = opts.caseSensitive || false;
+    const result: any = {};
+    for (const key in obj) {
+      if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+      const km = this.strMatch(key, opts.keyFilter, cs);
+      const vm = this.valMatch(obj[key], opts.valueFilter, cs);
+      if (km || vm || typeof obj[key] === 'object') {
+        const fv = this.filterObject(obj[key], opts);
+        const nonEmpty = Array.isArray(fv) ? fv.length > 0 : typeof fv === 'object' && fv !== null ? Object.keys(fv).length > 0 : true;
+        if (fv !== null && nonEmpty) result[key] = fv;
+        else if (km || vm) result[key] = obj[key];
+      }
+    }
+    return result;
+  }
+  private strMatch(t: string, f: string | undefined, cs: boolean): boolean {
+    if (!f) return false;
+    return cs ? t.includes(f) : t.toLowerCase().includes(f.toLowerCase());
+  }
+  private valMatch(v: any, f: string | undefined, cs: boolean): boolean {
+    if (!f || v == null || typeof v === 'object') return false;
+    return this.strMatch(String(v), f, cs);
+  }
+
+  /* ── HELPERS ── */
+  private handleError(err: any): void { this.error.set(err?.message || 'Invalid JSON'); this.output.set(''); }
 }

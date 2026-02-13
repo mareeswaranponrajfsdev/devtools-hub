@@ -1,11 +1,10 @@
-export type ImportSource = 'file' | 'url' | 'csv';
-
 export interface ImportResult {
   success: boolean;
   data?: string;
-  error?: string;
-  source: ImportSource;
   fileName?: string;
+  error?: string;
+  fileSize?: number;
+  source?: string;
 }
 
 export interface UrlImportOptions {

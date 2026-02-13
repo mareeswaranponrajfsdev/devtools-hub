@@ -1,0 +1,51 @@
+/* Production-Ready Global Styles - Enhanced with Perfect Dark Mode */
+
+:root {
+  --primary: #0da2e7;
+  --primary-soft: #e0f2fe;
+  --primary-dark: #0b8bc7;
+  --bg-main: #ffffff;
+  --bg-soft: #f8fafc;
+  --bg-card: #ffffff;
+  --textarea-bg-card: #f9fcff;
+  --bg-section: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --font-main: 'Inter', system-ui, sans-serif;
+}
+
+[data-theme="dark"] {
+  --primary: #38bdf8;
+  --primary-soft: #0c4a6e;
+  --primary-dark: #0284c7;
+  --bg-main: #0f172a;
+  --bg-soft: #0f172a;
+  --bg-card: #1e293b;
+  --textarea-bg-card: #1e293b;
+  --bg-section: #0f172a;
+  --text-main: #e5e7eb;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  --border-light: #334155;
+  --border-medium: #475569;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background: var(--bg-soft);
+  color: var(--text-main);
+  transition: background 0.2s, color 0.2s;
+}
+
+
+.btn-primary {
+  background: var(--primary);
+}
+
+.btn-primary:disabled {
+  background: var(--primary);
+}

@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-tools-section',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule],
   templateUrl: './tools-section.html',
   styleUrl: './tools-section.scss',
 })
 export class ToolsSection {
-
   tools = [
     {
       title: 'JSON to Code Generator',
@@ -33,5 +33,4 @@ export class ToolsSection {
       color: '#10b981'
     }
   ];
-
 }

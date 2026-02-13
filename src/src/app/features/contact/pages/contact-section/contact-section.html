@@ -1,0 +1,154 @@
+<section class="contact-section container my-5">
+
+  <!-- Icon -->
+  <div class="contact-icon">
+    <i class="fa-solid fa-envelope"></i>
+  </div>
+
+  <!-- Title -->
+  <h2 class="text-center fw-bold mb-2">
+    Contact Us
+  </h2>
+
+  <!-- Subtitle -->
+  <p class="text-center text-muted mb-4">
+    Have feedback, suggestions, or found a bug?
+    We'd love to hear from you.
+  </p>
+
+
+  <!-- Card -->
+  <div class="contact-card">
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      novalidate
+    >
+
+      <div class="row g-3">
+
+        <!-- NAME -->
+        <div class="col-md-6">
+
+          <label>
+            Name <span class="req">*</span>
+          </label>
+
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Your name"
+            formControlName="name"
+          />
+
+          <small
+            class="error"
+            *ngIf="f['name'].touched && f['name'].invalid"
+          >
+            Name is required (Min 3 chars)
+          </small>
+
+        </div>
+
+
+        <!-- EMAIL -->
+        <div class="col-md-6">
+
+          <label>
+            Email <span class="req">*</span>
+          </label>
+
+          <input
+            type="email"
+            class="form-control"
+            placeholder="you@example.com"
+            formControlName="email"
+          />
+
+          <small
+            class="error"
+            *ngIf="f['email'].touched && f['email'].invalid"
+          >
+            Valid email required
+          </small>
+
+        </div>
+
+
+        <!-- MESSAGE -->
+        <div class="col-12">
+
+          <label>
+            Message <span class="req">*</span>
+          </label>
+
+          <textarea
+            rows="5"
+            class="form-control"
+            placeholder="Tell us more..."
+            formControlName="message"
+          ></textarea>
+
+          <small
+            class="error"
+            *ngIf="f['message'].touched && f['message'].invalid"
+          >
+            Message required (Min 10 chars)
+          </small>
+
+        </div>
+
+
+        <!-- SUCCESS -->
+        <div
+          *ngIf="successMsg"
+          class="alert alert-success mt-3"
+        >
+          ✅ Message sent successfully!
+        </div>
+
+
+        <!-- ERROR -->
+        <div
+          *ngIf="errorMsg"
+          class="alert alert-danger mt-3"
+        >
+          ❌ Failed to send. Please try again.
+        </div>
+
+
+        <!-- SUBMIT -->
+        <div class="col-12 mt-3">
+
+          <button
+            type="submit"
+            class="btn btn-theme w-100 btn-lg"
+            [disabled]="form.invalid || submitting"
+          >
+
+            <ng-container *ngIf="!submitting; else loading">
+
+              <i class="fa-solid fa-paper-plane me-2"></i>
+              Send Message
+
+            </ng-container>
+
+            <ng-template #loading>
+
+              <i class="fa-solid fa-spinner fa-spin me-2"></i>
+              Sending...
+
+            </ng-template>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</section>

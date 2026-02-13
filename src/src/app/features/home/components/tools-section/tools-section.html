@@ -1,0 +1,33 @@
+<section id="tools" class="tools-section py-5">
+  <div class="container">
+    
+    <!-- Section Header -->
+    <!-- <div class="text-center mb-5">
+      <h2 class="fw-bold mb-3">Powerful JSON Tools</h2>
+      <p class="text-muted">
+        Professional developer tools for working with JSON data
+      </p>
+    </div> -->
+
+    <!-- Tools Grid -->
+    <div class="row g-4">
+      
+      <!-- Tool Card -->
+      <div *ngFor="let tool of tools" class="col-md-6 col-lg-4">
+        <a [routerLink]="tool.route" class="tool-card">
+          <div class="tool-icon" [style.background]="tool.color">
+            <i class="fa-solid" [class]="tool.icon"></i>
+          </div>
+          <h5 class="tool-title">{{ tool.title }}</h5>
+          <p class="tool-description">{{ tool.description }}</p>
+          <div class="tool-link">
+            Try it now
+            <i class="fa-solid fa-arrow-right ms-2"></i>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</section>

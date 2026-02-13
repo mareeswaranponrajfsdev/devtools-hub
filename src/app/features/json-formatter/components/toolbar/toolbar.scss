@@ -1,265 +1,220 @@
+/* ── Toolbar shell ── */
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  flex-wrap: wrap;
+  gap: 10px;
   background: #f8fbff;
   border: 1px solid #e5eef7;
-
-  padding: 10px 16px;
+  padding: 10px 14px;
   border-radius: 12px;
-
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
   margin-bottom: 12px;
 }
 
-
-/* LEFT GROUP */
+/* ── Left group ── */
 .toolbar-left {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-
-/* BUTTON */
-.tool-btn {
-  display: flex;
-  align-items: center;
   gap: 6px;
-
-  padding: 4px 10px;
-
-  border-radius: 8px;
-  border: 1px solid transparent;
-
-  color: #334155;
-  background: #ffffff;
-
-  font-size: 14px;
-  font-weight: 500;
-
-  cursor: pointer;
-  transition: all 0.2s ease;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.tool-btn.primary {
-  background: var(--primary) !important;
-}
-
-
-.tool-btn i {
-  font-size: 13px;
-}
-
-
-/* Primary */
-.tool-btn.primary {
-  background: #0d6efd;
-  color: #fff;
-}
-
-.tool-btn.primary:hover {
-  background: #0b5ed7;
-}
-
-
-/* Success (Auto Fix) */
-.tool-btn.success {
-  background: #10b981;
-  color: #fff;
-  border: none;
-}
-
-.tool-btn.success:hover {
-  background: #059669;
-}
-
-
-/* Active State (Tree View) */
-.tool-btn.active {
-  background: #dbeafe;
-  border-color: #60a5fa;
-  color: #1e40af;
-}
-
-.tool-btn.active:hover {
-  background: #bfdbfe;
-}
-
-
-/* Normal hover */
-.tool-btn:hover {
-  background: #e9f0ff;
-}
-
-
-/* Danger */
-.tool-btn.danger {
-  background: #fff;
-  border-color: #fecaca;
-  color: #dc2626;
-}
-
-.tool-btn.danger:hover {
-  background: #fee2e2;
-}
-
-
-/* Disabled */
-.tool-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-
-/* RIGHT GROUP */
+/* ── Right group ── */
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.live-label {
-  font-size: 14px;
-  font-weight: 500;
+/* ── Separator ── */
+.toolbar-sep {
+  width: 1px;
+  height: 28px;
+  background: #e2e8f0;
+  flex-shrink: 0;
 }
 
-
-/* SWITCH */
-.switch {
-  position: relative;
-  width: 42px;
-  height: 22px;
-  cursor: pointer;
-
-}
-
-.switch input {
-  display: none;
-}
-
-.slider {
-  position: absolute;
-  inset: 0;
-
-  background: #cbd5e1;
-  border-radius: 20px;
-
-  transition: 0.3s;
-}
-
-.slider::before {
-  content: '';
-
-  position: absolute;
-  height: 18px;
-  width: 18px;
-
-  left: 2px;
-  top: 2px;
-
-  background: #fff;
-  border-radius: 50%;
-
-  transition: 0.3s;
-}
-
-
-/* Checked */
-.switch input:checked + .slider {
-  background: var(--primary);
-}
-
-.switch input:checked + .slider::before {
-  transform: translateX(20px);
-}
-
-/* ===============================
-   TOOLTIP
-=============================== */
-
-.tooltip-wrapper {
-  position: relative;
+/* ── Primary Format button ── */
+.btn-primary {
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #0d6efd;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s;
+  i { font-size: 13px; }
+  &:hover:not(:disabled) { background: #0b5ed7; }
+  &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
+/* ── Tool buttons ── */
+.tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: #fff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  i { font-size: 12px; }
+  &:hover:not(:disabled) { background: #e9f0ff; }
+  &:disabled { opacity: .5; cursor: not-allowed; }
+  &.success { background: #10b981; color: #fff; border-color: transparent;
+    &:hover:not(:disabled) { background: #059669; } }
+  &.danger  { background: #fff; border-color: #fecaca; color: #dc2626;
+    &:hover:not(:disabled) { background: #fee2e2; } }
+  &.active  { background: #dbeafe; border-color: #60a5fa; color: #1e40af; }
+}
+
+/* ── Inline Setting groups ── */
+.setting-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.setting-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* ── Segmented control ── */
+.seg-control {
+  display: flex;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+.seg-btn {
+  padding: 3px 9px;
+  border: none;
+  border-right: 1px solid #e2e8f0;
+  background: transparent;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  &:last-child { border-right: none; }
+  &:hover:not(.active) { background: #f1f5f9; }
+  &.active {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+    & + .seg-btn { border-left-color: #2563eb; }
+  }
+}
+
+/* ── Mini toggle (Sort Keys) ── */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.mini-toggle {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  border-radius: 10px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: background .2s;
+  &.on {
+    background: #2563eb;
+    .mini-thumb { transform: translateX(16px); }
+  }
+}
+.mini-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  transition: transform .2s;
+}
+
+/* ── Live switch ── */
+.switch {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  cursor: pointer;
+  input { display: none; }
+}
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #cbd5e1;
+  border-radius: 20px;
+  transition: .3s;
+  &::before {
+    content: '';
+    position: absolute;
+    height: 16px; width: 16px;
+    left: 2px; top: 2px;
+    background: #fff;
+    border-radius: 50%;
+    transition: .3s;
+  }
+}
+.switch input:checked + .slider { background: #0d6efd; }
+.switch input:checked + .slider::before { transform: translateX(18px); }
+
+/* ── Tooltip ── */
+.tooltip-wrapper {
+  position: relative;
+}
 .tooltip-text {
   position: absolute;
-
-  bottom: 130%; /* Above switch */
+  bottom: 130%;
   left: 50%;
   transform: translateX(-50%);
-
   background: #111827;
-  color: #ffffff;
-
-  font-size: 12px;
-  font-weight: 500;
-
-  padding: 6px 10px;
+  color: #fff;
+  font-size: 11px;
+  padding: 5px 9px;
   border-radius: 6px;
-
   white-space: nowrap;
-
   opacity: 0;
   visibility: hidden;
-
-  pointer-events: none;
-
-  transition: all 0.15s ease;
+  transition: all .15s;
   z-index: 1000;
-}
-
-
-/* Arrow */
-
-.tooltip-text::after {
-  content: '';
-
-  position: absolute;
-
-  top: 100%;
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  border-width: 6px;
-  border-style: solid;
-
-  border-color: #111827 transparent transparent transparent;
-}
-
-
-/* Show on Hover */
-
-.tooltip-wrapper:hover .tooltip-text {
-  opacity: 1;
-  visibility: visible;
-}
-
-
-/* ===============================
-   MOBILE RESPONSIVE
-=============================== */
-
-@media (max-width: 768px) {
-
-  .toolbar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
+  pointer-events: none;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #111827;
   }
+}
+.tooltip-wrapper:hover .tooltip-text { opacity: 1; visibility: visible; }
 
-  .toolbar-left {
-    justify-content: center;
-  }
-
-  .toolbar-right {
-    justify-content: center;
-  }
-
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbar-left { justify-content: center; }
+  .toolbar-right { justify-content: center; }
+  .toolbar-sep { width: 100%; height: 1px; }
 }
