@@ -1,0 +1,119 @@
+<div class="history-host">
+
+  <!-- Toggle button -->
+  <button
+    type="button"
+    class="history-btn"
+    [class.active]="isOpen()"
+    (click)="$event.stopPropagation(); togglePanel()"
+    title="View JSON history">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    <span>History</span>
+    @if (entries().length > 0) {
+      <span class="badge">{{ entries().length }}</span>
+    }
+  </button>
+
+  <!-- Right-side panel overlay -->
+  @if (isOpen()) {
+    <!-- Backdrop -->
+    <div class="panel-backdrop" (click)="togglePanel()"></div>
+
+    <!-- Panel -->
+    <div class="history-panel" (click)="$event.stopPropagation()">
+
+      <!-- Panel header -->
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          JSON History
+          @if (entries().length > 0) {
+            <span class="count-badge">{{ entries().length }}</span>
+          }
+        </div>
+        <div class="panel-actions">
+          @if (entries().length > 0) {
+            <button type="button" class="btn-clear-all" (click)="clearAll()" title="Clear all history">
+              <i class="fa-solid fa-trash"></i> Clear All
+            </button>
+          }
+          <button type="button" class="btn-close-panel" (click)="togglePanel()" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Two-column: list + preview -->
+      <div class="panel-body">
+
+        <!-- Entry list -->
+        <div class="entries-list">
+          @if (entries().length === 0) {
+            <div class="empty-state">
+              <i class="fa-solid fa-inbox"></i>
+              <p>No history yet</p>
+              <small>History is saved when you clear or reload the page</small>
+            </div>
+          } @else {
+            @for (entry of entries(); track entry.key) {
+              <div
+                class="entry-item"
+                [class.selected]="preview()?.key === entry.key"
+                (click)="showPreview(entry)">
+                <div class="entry-icon">
+                  <i class="fa-solid fa-file-code"></i>
+                </div>
+                <div class="entry-info">
+                  <div class="entry-label">{{ entry.label }}</div>
+                  <div class="entry-snippet">{{ snippet(entry.content) }}</div>
+                  <div class="entry-meta">
+                    <span><i class="fa-solid fa-clock"></i> {{ formatTime(entry.timestamp) }}</span>
+                    <span><i class="fa-solid fa-weight-hanging"></i> {{ formatSize(entry.size) }}</span>
+                  </div>
+                </div>
+                <div class="entry-btns">
+                  <button
+                    type="button"
+                    class="btn-restore"
+                    (click)="$event.stopPropagation(); onRestore(entry)"
+                    title="Restore this JSON">
+                    <i class="fa-solid fa-rotate-left"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-delete"
+                    (click)="onDelete(entry, $event)"
+                    title="Delete">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Preview pane -->
+        <div class="preview-pane">
+          @if (preview()) {
+            <div class="preview-header">
+              <span class="preview-label">{{ preview()!.label }}</span>
+              <button
+                type="button"
+                class="btn-restore-preview"
+                (click)="onRestore(preview()!)">
+                <i class="fa-solid fa-rotate-left"></i> Restore
+              </button>
+            </div>
+            <pre class="preview-code">{{ preview()!.content }}</pre>
+          } @else {
+            <div class="preview-empty">
+              <i class="fa-solid fa-arrow-left"></i>
+              <p>Select an entry to preview</p>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

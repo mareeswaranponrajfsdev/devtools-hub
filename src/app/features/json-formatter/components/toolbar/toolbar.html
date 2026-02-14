@@ -31,6 +31,13 @@
       <i class="fa-solid fa-trash"></i> Clear
     </button>
 
+    <!-- History — lives right after Clear -->
+    <app-session-history-list
+      [refreshTrigger]="historyRefresh"
+      (restore)="historyRestore.emit($event)"
+      (delete)="$event">
+    </app-session-history-list>
+
   </div>
 
   <!-- ── Right: Inline Settings + Live toggle ── -->

@@ -1,174 +1,219 @@
-<div class="container my-2">
+<div class="diff-tool-container">
   
-  <!-- Header -->
-  <div class="text-center mb-2">
-    <h1 class="fw-bold mb-3">JSON Diff & Compare Tool</h1>
-    <p class="text-muted">
-      Compare two JSON files side-by-side and highlight the differences
-    </p>
+  <!-- Header Section -->
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="fa-solid fa-code-compare title-icon"></i>
+      JSON Diff & Compare
+    </h1>
   </div>
 
-  <!-- Action Buttons -->
-  <div class="d-flex gap-2 mb-4 justify-content-center flex-wrap">
-    <button 
-      type="button"
-      class="btn btn-primary"
-      (click)="compareLists()">
-      <i class="fa-solid fa-code-compare me-2"></i>
-      Compare JSON
-    </button>
-    <button 
-      type="button"
-      class="btn btn-outline-secondary"
-      (click)="loadSample()">
-      <i class="fa-solid fa-file-code me-2"></i>
-      Load Sample
-    </button>
-    <button 
-      type="button"
-      class="btn btn-outline-danger"
-      (click)="clear()">
-      <i class="fa-solid fa-trash me-2"></i>
-      Clear All
-    </button>
-  </div>
+  <!-- Compact Action & Export Bar -->
+  <div class="compact-control-bar">
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button 
+        type="button"
+        class="btn-action btn-primary btn-primary-action"
+        (click)="compareLists()"
+        [disabled]="isProcessing()">
+        <i class="fa-solid fa-code-compare"></i>
+        <span>{{ isProcessing() ? 'Comparing...' : 'Compare' }}</span>
+      </button>
+      <button 
+        type="button"
+        class="btn-action btn-secondary-action"
+        (click)="loadSample()">
+        <i class="fa-solid fa-file-code"></i>
+        <span>Sample</span>
+      </button>
+      <button 
+        type="button"
+        class="btn-action btn-danger-action"
+        (click)="clear()">
+        <i class="fa-solid fa-trash-can"></i>
+        <span>Clear</span>
+      </button>
+    </div>
 
-  <!-- Error Message -->
-  <div *ngIf="error()" class="alert alert-danger mb-4">
-    <i class="fa-solid fa-triangle-exclamation me-2"></i>
-    {{ error() }}
+    <!-- Export Buttons -->
+    <div *ngIf="differences().length > 0" class="export-buttons-inline">
+      <span class="export-label-inline">
+        <i class="fa-solid fa-download"></i>
+        Export:
+      </span>
+      <button 
+        type="button"
+        class="btn-export-inline"
+        (click)="exportDifferencesJSON()">
+        <i class="fa-solid fa-file-code"></i>
+        JSON
+      </button>
+      <button 
+        type="button"
+        class="btn-export-inline"
+        (click)="exportDifferencesCSV()">
+        <i class="fa-solid fa-file-csv"></i>
+        CSV
+      </button>
+      <button 
+        type="button"
+        class="btn-export-inline"
+        (click)="exportDifferencesTXT()">
+        <i class="fa-solid fa-file-lines"></i>
+        TXT
+      </button>
+    </div>
   </div>
-
-  <!-- Diff Summary -->
-  <div *ngIf="differences().length > 0" class="diff-summary mb-4">
-    <div class="row g-3">
-      <div class="col-md-4">
-        <div class="summary-card added">
-          <i class="fa-solid fa-plus-circle"></i>
-          <div class="summary-content">
-            <div class="summary-count">{{ getDiffCount('added') }}</div>
-            <div class="summary-label">Added</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="summary-card removed">
-          <i class="fa-solid fa-minus-circle"></i>
-          <div class="summary-content">
-            <div class="summary-count">{{ getDiffCount('removed') }}</div>
-            <div class="summary-label">Removed</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="summary-card modified">
-          <i class="fa-solid fa-pencil"></i>
-          <div class="summary-content">
-            <div class="summary-count">{{ getDiffCount('modified') }}</div>
-            <div class="summary-label">Modified</div>
-          </div>
-        </div>
-      </div>
+  
+  <!-- Copy Feedback Toast -->
+  <div *ngIf="copyFeedback()" class="copy-toast">
+    <div class="copy-toast-content">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ copyFeedback() }}</span>
     </div>
   </div>
 
-  <!-- Side-by-Side Editors -->
-  <div class="row g-4 mb-4">
-    
-    <!-- Left JSON -->
-    <div class="col-lg-6">
-      <div class="card h-100">
-        <div class="card-header">
-          <h5 class="mb-0">
-            <i class="fa-solid fa-file-code me-2"></i>
-            JSON 1 (Original)
-          </h5>
+  <!-- Error Alert -->
+  <div *ngIf="error()" class="alert-error">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    <span>{{ error() }}</span>
+  </div>
+
+  <!-- Compact Summary -->
+  <div *ngIf="differences().length > 0" class="compact-summary">
+    <div class="summary-item summary-added">
+      <i class="fa-solid fa-plus-circle"></i>
+      <span class="summary-value">{{ getDiffCount('added') }}</span>
+      <span class="summary-text">Added</span>
+    </div>
+    <div class="summary-item summary-removed">
+      <i class="fa-solid fa-minus-circle"></i>
+      <span class="summary-value">{{ getDiffCount('removed') }}</span>
+      <span class="summary-text">Removed</span>
+    </div>
+    <div class="summary-item summary-modified">
+      <i class="fa-solid fa-pen"></i>
+      <span class="summary-value">{{ getDiffCount('modified') }}</span>
+      <span class="summary-text">Modified</span>
+    </div>
+    <div class="summary-scroll-hint">
+      <i class="fa-solid fa-arrow-down"></i>
+      <span>Scroll for details</span>
+    </div>
+  </div>
+
+  <!-- Monaco Editor Section -->
+  <div class="editor-section">
+    <div class="editor-card">
+      <!-- Editor Header with Copy Buttons -->
+      <div class="editor-header">
+        <div class="editor-side editor-side-left">
+          <div class="editor-label">
+            <i class="fa-solid fa-file-code"></i>
+            <span>JSON 1 (Original)</span>
+          </div>
+          <button 
+            type="button"
+            class="btn-copy-editor"
+            (click)="copyJSON1()"
+            title="Copy JSON 1 to clipboard">
+            <i class="fa-solid fa-copy"></i>
+            <span>Copy</span>
+          </button>
         </div>
-        <div class="card-body">
-          <textarea 
-            class="form-control code-input"
-            [(ngModel)]="leftJson"
-            placeholder='Paste your first JSON here...'
-            rows="20"></textarea>
+        <div class="editor-divider"></div>
+        <div class="editor-side editor-side-right">
+          <div class="editor-label">
+            <i class="fa-solid fa-file-code"></i>
+            <span>JSON 2 (Modified)</span>
+          </div>
+          <button 
+            type="button"
+            class="btn-copy-editor"
+            (click)="copyJSON2()"
+            title="Copy JSON 2 to clipboard">
+            <i class="fa-solid fa-copy"></i>
+            <span>Copy</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Monaco Diff Editor -->
+      <div #diffEditorContainer class="monaco-editor-wrapper"></div>
+      
+      <!-- Editor Footer Info -->
+      <div class="editor-footer">
+        <div class="footer-info">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Scroll synchronized • Code folding enabled • Click ▼ to collapse/expand nested objects</span>
         </div>
       </div>
     </div>
-
-    <!-- Right JSON -->
-    <div class="col-lg-6">
-      <div class="card h-100">
-        <div class="card-header">
-          <h5 class="mb-0">
-            <i class="fa-solid fa-file-code me-2"></i>
-            JSON 2 (Modified)
-          </h5>
-        </div>
-        <div class="card-body">
-          <textarea 
-            class="form-control code-input"
-            [(ngModel)]="rightJson"
-            placeholder='Paste your second JSON here...'
-            rows="20"></textarea>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Differences Table -->
-  <div *ngIf="differences().length > 0" class="card">
-    <div class="card-header">
-      <h5 class="mb-0">
-        <i class="fa-solid fa-list me-2"></i>
-        Differences ({{ differences().length }})
-      </h5>
+  <div *ngIf="differences().length > 0" class="differences-section">
+    <div class="differences-header">
+      <h3 class="differences-title">
+        <i class="fa-solid fa-list-check"></i>
+        Detailed Differences
+        <span class="differences-count">{{ differences().length }}</span>
+      </h3>
+      <button 
+        type="button"
+        class="btn-copy-diffs"
+        (click)="copyDifferences()">
+        <i class="fa-solid fa-copy"></i>
+        <span>Copy All</span>
+      </button>
     </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0 diff-table">
-          <thead>
-            <tr>
-              <th>Path</th>
-              <th>Status</th>
-              <th>Original Value</th>
-              <th>New Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let diff of differences()" [class]="'diff-row diff-' + diff.type">
-              <td class="path-cell">
-                <code>{{ diff.path }}</code>
-              </td>
-              <td class="status-cell">
-                <span class="badge" [class]="'badge-' + diff.type">
-                  <i class="fa-solid" 
-                     [class.fa-plus]="diff.type === 'added'"
-                     [class.fa-minus]="diff.type === 'removed'"
-                     [class.fa-pencil]="diff.type === 'modified'"
-                     [class.fa-check]="diff.type === 'unchanged'"></i>
-                  {{ diff.type }}
-                </span>
-              </td>
-              <td class="value-cell">
-                <pre *ngIf="diff.type !== 'added'" class="value-content">{{ formatValue(diff.leftValue) }}</pre>
-                <span *ngIf="diff.type === 'added'" class="text-muted">-</span>
-              </td>
-              <td class="value-cell">
-                <pre *ngIf="diff.type !== 'removed'" class="value-content">{{ formatValue(diff.rightValue) }}</pre>
-                <span *ngIf="diff.type === 'removed'" class="text-muted">-</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="table-wrapper">
+      <table class="diff-table">
+        <thead>
+          <tr>
+            <th class="th-path">Path</th>
+            <th class="th-status">Status</th>
+            <th class="th-value">Original Value</th>
+            <th class="th-value">New Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let diff of differences()" [class]="'row-' + diff.type">
+            <td class="td-path">
+              <code class="path-code">{{ diff.path }}</code>
+            </td>
+            <td class="td-status">
+              <span class="status-badge" [class]="'badge-' + diff.type">
+                <i class="fa-solid" 
+                   [class.fa-plus]="diff.type === 'added'"
+                   [class.fa-minus]="diff.type === 'removed'"
+                   [class.fa-pen]="diff.type === 'modified'"
+                   [class.fa-check]="diff.type === 'unchanged'"></i>
+                <span>{{ diff.type }}</span>
+              </span>
+            </td>
+            <td class="td-value">
+              <pre *ngIf="diff.type !== 'added'" class="value-pre">{{ formatValue(diff.leftValue) }}</pre>
+              <span *ngIf="diff.type === 'added'" class="value-empty">—</span>
+            </td>
+            <td class="td-value">
+              <pre *ngIf="diff.type !== 'removed'" class="value-pre">{{ formatValue(diff.rightValue) }}</pre>
+              <span *ngIf="diff.type === 'removed'" class="value-empty">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="differences().length === 0 && leftJson() && rightJson() && !error()" class="empty-state">
-    <i class="fa-solid fa-check-circle fa-3x mb-3 text-success"></i>
-    <h5>No Differences Found</h5>
-    <p class="text-muted">Both JSON files are identical</p>
+  <div *ngIf="differences().length === 0 && leftJson() && rightJson() && !error() && !isProcessing()" class="empty-state">
+    <div class="empty-icon">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <h4 class="empty-title">No Differences Found</h4>
+    <p class="empty-text">Both JSON files are identical</p>
   </div>
 
 </div>

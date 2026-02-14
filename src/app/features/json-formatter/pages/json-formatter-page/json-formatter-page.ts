@@ -28,6 +28,12 @@ import { ConversionFormat } from '../../services/json-converter.service';
 import { FormatterOptions } from '../../models/formatter-options.model';
 import { FormatterPreset } from '../../models/formatter-presets.model';
 import { FilterOptions } from '../../services/json-filter.service';
+import { SessionStorageService, SessionData } from '../../../../core/services/session-storage.service';
+import { LargeFileHandlerService, PerformanceMode } from '../../../../core/services/large-file-handler.service';
+import { SessionRestoreComponent } from '../../../../shared/components/session-restore/session-restore.component';
+import { PerformanceModeComponent } from '../../../../shared/components/performance-mode/performance-mode.component';
+import { SessionHistoryListComponent } from '../../../../shared/components/session-history-list/session-history-list.component';
+import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-json-formatter-page',
@@ -44,6 +50,9 @@ import { FilterOptions } from '../../services/json-filter.service';
     SaveMenuComponent,
     TransformModalComponent,
     CsvExportModalComponent,
+    SessionRestoreComponent,
+    PerformanceModeComponent,
+    SessionHistoryListComponent,
   ],
   providers: [JsonFormatterStore],
   templateUrl: './json-formatter-page.html',
@@ -54,7 +63,12 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
 
   copied = false;
   showCsvModal = signal(false);
+  historyRefresh = signal(0);
   private copyTimer: any = null;
+
+  // Session and Performance Mode signals
+  savedSession = signal<SessionData | null>(null);
+  performanceMode = signal<PerformanceMode | null>(null);
 
   /** Controls the Convert dropdown open/close state */
   convertOpen = signal(false);
@@ -71,13 +85,45 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
     private cdr: ChangeDetectorRef,
     private analytics: AnalyticsService,
     private elRef: ElementRef,
-  ) {}
+    private sessionStorage: SessionStorageService,
+    private largeFileHandler: LargeFileHandlerService,
+  ) {
+    // Setup auto-save effect
+    effect(() => {
+      const input = this.store.input();
+      if (input && input.trim()) {
+        // Auto-save with debounce
+        this.sessionStorage.saveDebounced('json-session-formatter-input', input);
+        
+        // Check file size for performance mode
+        const mode = this.largeFileHandler.checkSize(input);
+        this.performanceMode.set(mode);
+      }
+    });
+  }
 
   ngOnInit(): void {
+    // Check for saved session on load
+    const saved = this.sessionStorage.load('json-session-formatter-input');
+    if (saved) {
+      this.savedSession.set(saved);
+    }
+    
+    // Subscribe to performance mode
+    this.largeFileHandler.performanceMode$.subscribe(mode => {
+      this.performanceMode.set(mode);
+    });
+    
     document.addEventListener('fullscreenchange', () => {
       this.isFullscreenInput  = document.fullscreenElement === this.inputContainer?.nativeElement;
       this.isFullscreenOutput = document.fullscreenElement === this.outputContainer?.nativeElement;
       this.cdr.markForCheck();
+    });
+
+    // Save to history on page unload/reload
+    window.addEventListener('beforeunload', () => {
+      const input = this.store.input().trim();
+      if (input) { this.store.saveJsonToHistory(input, 'Page reload'); }
     });
   }
 
@@ -165,6 +211,7 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
   /* ── IMPORT ── */
   async onImport(action: ImportAction): Promise<void> {
     await this.store.handleImport(action);
+    this.historyRefresh.set(this.historyRefresh() + 1);
     this.cdr.markForCheck();
   }
 
@@ -213,9 +260,44 @@ export class JsonFormatterPage implements OnDestroy, OnInit {
   onFilter(filterOptions: FilterOptions): void { this.store.applyFilter(filterOptions); }
   onResetFilter(): void                         { this.store.resetFilter(); }
 
+  /* ── SESSION RESTORE ── */
+  onRestoreSession(): void {
+    const saved = this.savedSession();
+    if (saved) {
+      this.store.setInput(saved.content);
+      this.savedSession.set(null);
+      this.analytics.track(ANALYTICS_EVENTS.JSON_FORMAT);
+    }
+  }
+
+  onDiscardSession(): void {
+    this.sessionStorage.remove('json-session-formatter-input');
+    this.savedSession.set(null);
+  }
+
+  onHistoryRestore(data: any): void {
+    if (data && data.content) {
+      this.store.setInput(data.content);
+      this.analytics.track(ANALYTICS_EVENTS.JSON_FORMAT);
+    }
+  }
+
   /* ── TOOLBAR ACTIONS ── */
   onFormat(): void { this.store.format(); this.analytics.track(ANALYTICS_EVENTS.JSON_FORMAT); }
   onMinify(): void { this.store.minify(); this.analytics.track(ANALYTICS_EVENTS.JSON_MINIFY); }
+  
+  onValidate(): void {
+    this.store.validate();
+    this.historyRefresh.set(this.historyRefresh() + 1);
+  }
+
+  onClear(): void {
+    this.store.clear();
+    this.largeFileHandler.disablePerformanceMode();
+    this.performanceMode.set(null);
+    // Refresh history panel after clear saves to history
+    this.historyRefresh.set(this.historyRefresh() + 1);
+  }
 
   loadSample(): void {
     this.store.setInput(`{

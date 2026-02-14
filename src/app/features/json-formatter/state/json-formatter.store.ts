@@ -66,7 +66,8 @@ export class JsonFormatterStore {
     const isSuccess = msg.startsWith('✓') || msg.startsWith('☁️') || msg.startsWith('📤') ||
                       msg.includes('Importing') || msg.includes('auto-fixed') || msg.includes('valid');
     if (isSuccess) {
-      this.successTimer = setTimeout(() => { this.error.set(null); this.successTimer = null; }, 3000);
+      const delay = msg.includes('Imported from') ? 5000 : 3000;
+      this.successTimer = setTimeout(() => { this.error.set(null); this.successTimer = null; }, delay);
     }
   }
 
@@ -145,16 +146,61 @@ export class JsonFormatterStore {
   validate(): void {
     const input = this.input().trim();
     if (!input) { this.setMessage('✗ Please enter JSON first'); return; }
-    try { JSON.parse(input); this.setMessage('✓ JSON is valid'); }
+    try {
+      JSON.parse(input);
+      this.saveJsonToHistory(input, 'Validated');
+      this.setMessage('✓ JSON is valid');
+    }
     catch (err: any) { this.error.set('✗ Invalid JSON: ' + err.message); }
   }
 
   /* ── CLEAR / COPY ── */
   clear(): void {
+    const currentInput = this.input().trim();
+    if (currentInput) { this.saveJsonToHistory(currentInput, 'Manual clear'); }
     this.setInput(''); this.output.set(''); this.error.set(null);
     this.currentConversion.set(null); this.filterActive.set(false);
     this.originalOutput.set(''); this.cloudBinUrl.set(null);
     if (this.successTimer) { clearTimeout(this.successTimer); this.successTimer = null; }
+  }
+
+  /* ── HISTORY PERSISTENCE ── */
+  saveJsonToHistory(content: string, label: string = 'Auto-save'): void {
+    try {
+      const normalized = content.trim();
+      if (!normalized) return;
+
+      // Deduplicate: scan existing entries, skip if identical content already exists
+      const allKeys: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('json-history-')) {
+          allKeys.push(k);
+          try {
+            const existing = JSON.parse(localStorage.getItem(k) || '{}');
+            if (existing.content && existing.content.trim() === normalized) {
+              // Content already in history — just update timestamp + label of that entry
+              existing.timestamp = Date.now();
+              existing.label = label;
+              localStorage.setItem(k, JSON.stringify(existing));
+              return;
+            }
+          } catch {}
+        }
+      }
+
+      // New unique entry
+      const histKey = `json-history-${Date.now()}`;
+      const entry = { content: normalized, timestamp: Date.now(), size: new Blob([normalized]).size, label };
+      localStorage.setItem(histKey, JSON.stringify(entry));
+
+      // Prune: keep only last 20 history entries (oldest first)
+      allKeys.push(histKey);
+      if (allKeys.length > 20) {
+        allKeys.sort();
+        allKeys.slice(0, allKeys.length - 20).forEach(k => localStorage.removeItem(k));
+      }
+    } catch {}
   }
   copy(): void { if (this.output()) navigator.clipboard.writeText(this.output()); }
 
@@ -171,6 +217,10 @@ export class JsonFormatterStore {
       this.isProcessing.set(false);
       if (result.success && result.data) {
         this.setInput(result.data);
+        const importLabel = action.type === 'url'
+          ? `Imported from URL: ${action.url}`
+          : `Imported from file: ${result.fileName || 'file'}`;
+        this.saveJsonToHistory(result.data, importLabel);
         this.setMessage(`✓ Imported from ${result.fileName || 'source'}`);
         setTimeout(() => { try { this.format(); } catch {} }, 100);
       } else { this.error.set(`✗ Import failed: ${result.error}`); }

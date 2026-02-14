@@ -1,0 +1,132 @@
+.session-restore-banner {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  max-width: 600px;
+  width: 90%;
+  animation: slideDown 0.3s ease-out;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.banner-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-soft, #e0f2fe);
+  border-radius: 50%;
+  color: var(--primary, #0da2e7);
+  
+  i {
+    font-size: 20px;
+  }
+}
+
+.banner-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.banner-title {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main, #0f172a);
+}
+
+.banner-details {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted, #64748b);
+  display: flex;
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  i {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+}
+
+.banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  .session-restore-banner {
+    .banner-content {
+      background: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .banner-icon {
+      background: #0c4a6e;
+      color: #38bdf8;
+    }
+    
+    .banner-title {
+      color: #e5e7eb;
+    }
+    
+    .banner-details {
+      color: #94a3b8;
+    }
+  }
+}
+
+/* Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .session-restore-banner {
+    top: 70px;
+    width: 95%;
+  }
+  
+  .banner-content {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .banner-actions {
+    width: 100%;
+    justify-content: stretch;
+    
+    button {
+      flex: 1;
+    }
+  }
+}

@@ -1,5 +1,18 @@
 <div class="container py-3">
 
+  <!-- Session Restore Banner -->
+  <!-- <app-session-restore
+    [sessionData]="savedSession()"
+    [title]="'Previous JSON Session Found'"
+    (restore)="onRestoreSession()"
+    (discard)="onDiscardSession()">
+  </app-session-restore> -->
+
+  <!-- Performance Mode Alert -->
+  <app-performance-mode
+    [mode]="performanceMode()">
+  </app-performance-mode>
+
   <!-- Toolbar -->
   <app-json-toolbar
     [live]="store.liveMode()"
@@ -8,14 +21,18 @@
     [formatterOptions]="store.formatterOptions()"
     (format)="onFormat()"
     (minify)="onMinify()"
-    (clear)="store.clear()"
+    (clear)="onClear()"
     (copy)="store.copy()"
     (toggleLive)="store.toggleLive()"
     (toggleTree)="store.toggleTreeView()"
     (sample)="loadSample()"
     (autoFix)="store.autoFixJson()"
-    (optionsChange)="onOptionsChange($event)">
+    (validate)="onValidate()"
+    (optionsChange)="onOptionsChange($event)"
+    [historyRefresh]="historyRefresh()"
+    (historyRestore)="onHistoryRestore($event)">
   </app-json-toolbar>
+
 
   <!-- Processing Indicator -->
   @if (store.isProcessing()) {
