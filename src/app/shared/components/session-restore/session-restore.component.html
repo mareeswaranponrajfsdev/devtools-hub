@@ -1,0 +1,40 @@
+@if (isVisible() && sessionData) {
+  <div class="session-restore-banner" role="alert" aria-live="polite">
+    <div class="banner-content">
+      <div class="banner-icon" aria-hidden="true">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </div>
+      <div class="banner-info">
+        <h6 class="banner-title">{{ title }}</h6>
+        <p class="banner-details">
+          <span class="detail-item">
+            <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+            {{ getFormattedTime(sessionData.timestamp) }}
+          </span>
+          <span class="detail-item">
+            <i class="fa-solid fa-file" aria-hidden="true"></i>
+            {{ getFormattedSize(sessionData.size) }}
+          </span>
+        </p>
+      </div>
+      <div class="banner-actions">
+        <button 
+          type="button" 
+          class="btn btn-sm btn-primary" 
+          (click)="onRestore()"
+          aria-label="Restore previous session">
+          <i class="fa-solid fa-rotate-left me-1" aria-hidden="true"></i>
+          Restore
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-sm btn-outline-secondary" 
+          (click)="onDiscard()"
+          aria-label="Discard previous session">
+          <i class="fa-solid fa-times me-1" aria-hidden="true"></i>
+          Discard
+        </button>
+      </div>
+    </div>
+  </div>
+}

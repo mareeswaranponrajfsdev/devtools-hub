@@ -8,11 +8,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormatterOptions, IndentationType, ArrayFormatting } from '../../models/formatter-options.model';
 import { FormatterOptionsComponent } from '../formatter-options/formatter-options';
+import { SessionHistoryListComponent } from '../../../../shared/components/session-history-list/session-history-list.component';
 
 @Component({
   selector: 'app-json-toolbar',
   standalone: true,
-  imports: [CommonModule, FormatterOptionsComponent],
+  imports: [CommonModule, FormatterOptionsComponent, SessionHistoryListComponent],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +35,9 @@ export class Toolbar {
   @Output() sample        = new EventEmitter<void>();
   @Output() autoFix       = new EventEmitter<void>();
   @Output() optionsChange = new EventEmitter<FormatterOptions>();
+
+  @Input()  historyRefresh = 0;
+  @Output() historyRestore = new EventEmitter<any>();
 
   changeIndent(value: IndentationType): void {
     this.optionsChange.emit({ ...this.formatterOptions, indentation: value });
