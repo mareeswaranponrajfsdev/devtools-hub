@@ -1,0 +1,59 @@
+@if (isOpen()) {
+  <div class="search-panel">
+    <div class="search-container">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Find in JSON..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+        (keydown.escape)="closeSearch()"
+        (keydown.enter)="goToNext()"
+        (keydown.shift.enter)="goToPrevious()"
+      />
+
+      @if (searchQuery()) {
+        <div class="search-matches">
+          {{ totalMatches() > 0 ? (currentMatch() + 1) + ' / ' + totalMatches() : 'No matches' }}
+        </div>
+      }
+
+      <button
+        class="search-btn"
+        [class.active]="caseSensitive()"
+        (click)="toggleCaseSensitive()"
+        title="Match Case"
+        type="button">
+        <i class="fa-solid fa-font"></i>
+      </button>
+
+      <button
+        class="search-nav"
+        (click)="goToPrevious()"
+        [disabled]="totalMatches() === 0"
+        title="Previous Match (Shift+Enter)"
+        type="button">
+        <i class="fa-solid fa-chevron-up"></i>
+      </button>
+
+      <button
+        class="search-nav"
+        (click)="goToNext()"
+        [disabled]="totalMatches() === 0"
+        title="Next Match (Enter)"
+        type="button">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+
+      <button
+        class="search-close"
+        (click)="closeSearch()"
+        title="Close (Esc)"
+        type="button">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+  </div>
+}

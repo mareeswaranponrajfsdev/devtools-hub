@@ -1,109 +1,103 @@
 <div class="toolbar">
 
-  <!-- Left Actions -->
+  <!-- ── Left: Action Buttons ── -->
   <div class="toolbar-left">
 
-    <button
-      class="btn btn-primary"
-      (click)="format.emit()"
-      [disabled]="disabled">
-
-      <i class="fa-solid fa-code"></i>
-      Format
+    <button class="btn-primary" (click)="format.emit()" [disabled]="disabled">
+      <i class="fa-solid fa-code"></i> Format
     </button>
 
-    <button
-      class="tool-btn"
-      (click)="minify.emit()"
-      [disabled]="disabled">
-
-      <i class="fa-solid fa-compress"></i>
-      Minify
+    <button class="tool-btn" (click)="minify.emit()" [disabled]="disabled">
+      <i class="fa-solid fa-compress"></i> Minify
     </button>
 
-    <button
-      class="tool-btn"
-      (click)="validate.emit()"
-      [disabled]="disabled">
-
-      <i class="fa-solid fa-circle-check"></i>
-      Validate
+    <button class="tool-btn" (click)="validate.emit()" [disabled]="disabled">
+      <i class="fa-solid fa-circle-check"></i> Validate
     </button>
 
-    <button
-      class="tool-btn success"
-      (click)="autoFix.emit()"
-      [disabled]="disabled"
-      title="Auto-fix common JSON errors">
-
-      <i class="fa-solid fa-wand-magic-sparkles"></i>
-      Auto Fix
+    <button class="tool-btn success" (click)="autoFix.emit()" [disabled]="disabled" title="Auto-fix common JSON errors">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Fix
     </button>
 
-    <button
-      class="tool-btn"
-      [class.active]="treeView"
-      (click)="toggleTree.emit()"
-      [disabled]="disabled"
-      title="Toggle tree view">
-
-      <i class="fa-solid fa-sitemap"></i>
-      Tree View
+    <button class="tool-btn" [class.active]="treeView" (click)="toggleTree.emit()" [disabled]="disabled" title="Toggle tree view">
+      <i class="fa-solid fa-sitemap"></i> Tree
     </button>
 
-    <button
-      class="tool-btn"
-      type="button"
-      (click)="sample.emit()">
-      <i class="fa-solid fa-flask"></i>
-      Sample
+    <button class="tool-btn" type="button" (click)="sample.emit()">
+      <i class="fa-solid fa-flask"></i> Sample
     </button>
 
-    <button
-      class="tool-btn danger"
-      (click)="clear.emit()">
-
-      <i class="fa-solid fa-trash"></i>
-      Clear
+    <button class="tool-btn danger" (click)="clear.emit()">
+      <i class="fa-solid fa-trash"></i> Clear
     </button>
 
   </div>
 
-
-  <!-- Right Toggle -->
+  <!-- ── Right: Inline Settings + Live toggle ── -->
   <div class="toolbar-right">
 
-    <app-formatter-options
-      [options]="formatterOptions"
-      (optionsChange)="optionsChange.emit($event)">
-    </app-formatter-options>
+    <!-- Indent -->
+    <div class="setting-group">
+      <span class="setting-label">Indent</span>
+      <div class="seg-control">
+        <button
+          class="seg-btn"
+          [class.active]="formatterOptions.indentation === '2spaces'"
+          (click)="changeIndent('2spaces')"
+          title="2 spaces">2</button>
+        <button
+          class="seg-btn"
+          [class.active]="formatterOptions.indentation === '4spaces'"
+          (click)="changeIndent('4spaces')"
+          title="4 spaces">4</button>
+        <button
+          class="seg-btn"
+          [class.active]="formatterOptions.indentation === 'tab'"
+          (click)="changeIndent('tab')"
+          title="Tab">⇥</button>
+      </div>
+    </div>
 
-    <div class="tooltip-wrapper">
-
-      <span class="live-label">
-        Live
-      </span>
-
-      <label class="switch">
-
-        <input
-          type="checkbox"
-          [checked]="live"
-          (change)="toggleLive.emit()">
-
-        <span class="slider"></span>
-
+    <!-- Sort Keys -->
+    <div class="setting-group">
+      <label class="toggle-label">
+        <span class="setting-label">Sort Keys</span>
+        <div class="mini-toggle" [class.on]="formatterOptions.sortKeys" (click)="toggleSort()">
+          <div class="mini-thumb"></div>
+        </div>
       </label>
+    </div>
 
+    <!-- Arrays -->
+    <div class="setting-group">
+      <span class="setting-label">Arrays</span>
+      <div class="seg-control">
+        <button
+          class="seg-btn"
+          [class.active]="formatterOptions.compactArrays === 'inline'"
+          (click)="changeArrayFmt('inline')"
+          title="Inline small arrays">Inline</button>
+        <button
+          class="seg-btn"
+          [class.active]="formatterOptions.compactArrays === 'multiline'"
+          (click)="changeArrayFmt('multiline')"
+          title="Multi-line arrays">Multi</button>
+      </div>
+    </div>
 
-      <!-- Tooltip -->
-      <span class="tooltip-text">
-        Enable live validation while typing
-      </span>
+    <!-- Divider -->
+    <div class="toolbar-sep"></div>
 
+    <!-- Live toggle -->
+    <div class="setting-group tooltip-wrapper">
+      <span class="setting-label">Live</span>
+      <label class="switch">
+        <input type="checkbox" [checked]="live" (change)="toggleLive.emit()">
+        <span class="slider"></span>
+      </label>
+      <span class="tooltip-text">Live validation while typing</span>
     </div>
 
   </div>
-
 
 </div>

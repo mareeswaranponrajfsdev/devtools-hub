@@ -477,3 +477,92 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* =====================================================
+   PROCESSING INDICATOR
+===================================================== */
+
+.processing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  border-radius: 10px;
+  color: #1e40af;
+  font-size: 14px;
+  font-weight: 500;
+
+  i {
+    font-size: 16px;
+  }
+}
+
+/* =====================================================
+   ALERT INFO STYLE
+===================================================== */
+
+.alert-info {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+/* ── Transform button ── */
+.transform-btn {
+  &.active {
+    color: #6366f1;
+    background: rgba(99,102,241,.08);
+  }
+}
+
+.reset-filter-btn {
+  color: #dc2626;
+  &:hover:not(:disabled) {
+    color: #dc2626;
+    background: rgba(220,38,38,.08);
+  }
+}
+
+/* ── Convert dropdown open state (replaces hover) ── */
+.convert-dropdown.open .dropdown-menu {
+  display: block !important;
+}
+.convert-caret {
+  transition: transform 0.2s ease;
+  &.rotated { transform: rotate(180deg); }
+}
+
+/* ── Alert close button ── */
+.alert {
+  position: relative;
+  .alert-close {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    &:hover { opacity: 1; background: rgba(0,0,0,0.08); }
+    i { font-size: 14px; }
+  }
+}
+
+/* ── Transform button active ── */
+.transform-btn {
+  &.active {
+    color: #6366f1 !important;
+    background: rgba(99,102,241,.1) !important;
+  }
+}
+.reset-filter-btn {
+  color: #dc2626 !important;
+  &:hover:not(:disabled) { background: rgba(220,38,38,.08) !important; }
+}

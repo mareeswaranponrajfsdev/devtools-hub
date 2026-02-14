@@ -1,0 +1,126 @@
+@if (isOpen) {
+  <div
+    class="tm-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tm-title"
+    tabindex="-1"
+    (click)="onOverlayClick($event)"
+    (keydown)="onKeydown($event)">
+
+    <div class="tm-box">
+
+      <!-- ── Header ── -->
+      <div class="tm-header">
+        <div class="tm-title-row">
+          <i class="fa-solid fa-wand-magic-sparkles tm-icon"></i>
+          <h3 id="tm-title">Transform</h3>
+          <span class="tm-badge">JMESPath</span>
+        </div>
+        <button class="tm-close" type="button" (click)="onClose()" title="Close (ESC)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- ── Body ── -->
+      <div class="tm-body">
+
+        <!-- Left panel -->
+        <div class="tm-left">
+
+          <!-- Query input -->
+          <div class="tm-field">
+            <label class="tm-label" for="jmes-q">
+              <i class="fa-solid fa-terminal"></i> JMESPath Query
+            </label>
+            <div class="tm-input-wrap" [class.err]="previewError() && query()">
+              <textarea
+                id="jmes-q"
+                class="tm-textarea"
+                rows="3"
+                spellcheck="false"
+                autocomplete="off"
+                [value]="query()"
+                (input)="onQueryInput($any($event.target).value)"
+                (keydown)="onKeydown($event)"
+                placeholder="e.g.  data.user   or   [?active==&#96;true&#96;]">
+              </textarea>
+              @if (isValid()) {
+                <span class="tm-badge-ok"><i class="fa-solid fa-circle-check"></i></span>
+              }
+              @if (previewError() && query()) {
+                <span class="tm-badge-err"><i class="fa-solid fa-circle-xmark"></i></span>
+              }
+            </div>
+          </div>
+
+          <!-- Examples -->
+          <div class="tm-field">
+            <label class="tm-label">
+              <i class="fa-solid fa-lightbulb"></i> Quick Examples
+            </label>
+            <div class="tm-ex-grid">
+              @for (ex of EXAMPLES; track ex.query) {
+                <button class="tm-ex-btn" type="button" (click)="useExample(ex)" [title]="ex.query">
+                  {{ ex.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Hint -->
+          <div class="tm-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>JMESPath query language for JSON.
+              <a href="https://jmespath.org/examples.html" target="_blank" rel="noopener">Examples →</a>
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Right panel: preview -->
+        <div class="tm-right">
+          <label class="tm-label">
+            <i class="fa-solid fa-eye"></i> Live Preview
+            @if (isValid()) { <span class="tm-ready">ready to apply</span> }
+          </label>
+
+          <div class="tm-preview"
+            [class.preview-ok]="isValid()"
+            [class.preview-err]="previewError() && !isValid()">
+
+            @if (!query()) {
+              <div class="tm-placeholder">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <p>Type a query to see the result</p>
+              </div>
+            } @else if (previewError()) {
+              <div class="tm-error-msg">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <code>{{ previewError() }}</code>
+              </div>
+            } @else if (previewResult()) {
+              <pre class="tm-result">{{ previewResult() }}</pre>
+            }
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Footer ── -->
+      <div class="tm-footer">
+        <span class="tm-kbd-hint">
+          <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to apply
+        </span>
+        <div class="tm-footer-btns">
+          <button class="tm-btn-sec" type="button" (click)="onClose()">Cancel</button>
+          <button class="tm-btn-pri" type="button" [disabled]="!isValid()" (click)="onApply()">
+            <i class="fa-solid fa-check"></i> Apply Transform
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

@@ -2,11 +2,14 @@ import { Injectable, signal, computed } from '@angular/core';
 import { JsonEngine } from '../services/json-engine';
 import { JsonAutoFix } from '../services/json-auto-fix';
 import { JsonConverterService, ConversionFormat } from '../services/json-converter.service';
+import { FormatterOptions, DEFAULT_FORMATTER_OPTIONS } from '../models/formatter-options.model';
 
 interface HistoryEntry {
   value: string;
   timestamp: number;
 }
+
+const STORAGE_KEY = 'json-formatter-options';
 
 @Injectable()
 export class JsonFormatterStore {
@@ -15,7 +18,9 @@ export class JsonFormatterStore {
     private engine: JsonEngine,
     private autoFix: JsonAutoFix,
     private converter: JsonConverterService
-  ) {}
+  ) {
+    this.loadOptionsFromStorage();
+  }
 
 
   /* ================= STATE ================= */
@@ -37,6 +42,9 @@ export class JsonFormatterStore {
 
   // Current conversion format
   currentConversion = signal<ConversionFormat | null>(null);
+
+  // Formatter options
+  formatterOptions = signal<FormatterOptions>(DEFAULT_FORMATTER_OPTIONS);
 
   // Undo/Redo history
   private history: HistoryEntry[] = [];
@@ -90,6 +98,33 @@ export class JsonFormatterStore {
   }
 
 
+  // -------- Formatter Options --------
+  updateOptions(options: FormatterOptions) {
+    this.formatterOptions.set(options);
+    this.saveOptionsToStorage(options);
+  }
+
+  private saveOptionsToStorage(options: FormatterOptions) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(options));
+    } catch (e) {
+      console.error('Failed to save formatter options:', e);
+    }
+  }
+
+  private loadOptionsFromStorage() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const options = JSON.parse(stored);
+        this.formatterOptions.set({ ...DEFAULT_FORMATTER_OPTIONS, ...options });
+      }
+    } catch (e) {
+      console.error('Failed to load formatter options:', e);
+    }
+  }
+
+
   // -------- Format --------
   format() {
 
@@ -98,7 +133,7 @@ export class JsonFormatterStore {
 
     try {
 
-      const result = this.engine.format(this.input());
+      const result = this.engine.format(this.input(), this.formatterOptions());
 
       this.output.set(result);
       this.error.set(null);

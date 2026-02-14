@@ -1,0 +1,125 @@
+<div class="sm-wrap">
+
+  <button class="sm-trigger" type="button" title="Save / Export"
+    [disabled]="disabled"
+    (click)="toggle()">
+    <i class="fa-solid fa-floppy-disk"></i>
+    <span>Save</span>
+    <i class="fa-solid fa-chevron-down sm-caret" [class.open]="isOpen()"></i>
+  </button>
+
+  @if (isOpen()) {
+    <div class="sm-panel" (keydown)="onKeydown($event)">
+
+      <!-- ── MAIN MENU ── -->
+      @if (panel() === 'menu') {
+        <div class="sm-head">Save / Export</div>
+        <div class="sm-list">
+
+          <button class="sm-item" type="button" (click)="onDisk()">
+            <span class="sm-ico disk"><i class="fa-solid fa-download"></i></span>
+            <span class="sm-txt">
+              <strong>Save to Disk</strong>
+              <small>Download as .json file</small>
+            </span>
+          </button>
+
+          <button class="sm-item" type="button" (click)="showCloud()">
+            <span class="sm-ico cloud"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+            <span class="sm-txt">
+              <strong>Save to Cloud</strong>
+              <small>Upload to JSONBin.io (free)</small>
+            </span>
+          </button>
+
+          <button class="sm-item" type="button" (click)="onCsv()">
+            <span class="sm-ico csv"><i class="fa-solid fa-file-csv"></i></span>
+            <span class="sm-txt">
+              <strong>Export to CSV</strong>
+              <small>Convert JSON → .csv</small>
+            </span>
+          </button>
+
+          <button class="sm-item" type="button" (click)="showUrl()">
+            <span class="sm-ico url"><i class="fa-solid fa-paper-plane"></i></span>
+            <span class="sm-txt">
+              <strong>Send to URL</strong>
+              <small>HTTP POST to endpoint</small>
+            </span>
+          </button>
+
+        </div>
+      }
+
+      <!-- ── SEND TO URL ── -->
+      @if (panel() === 'url') {
+        <div class="sm-sub">
+          <div class="sm-sub-head">
+            <button class="sm-back" type="button" (click)="back()" [disabled]="isLoading()">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <span>Send to URL</span>
+          </div>
+          <div class="sm-sub-body">
+            <label>Endpoint URL (HTTP POST)</label>
+            <input class="sm-input" type="url"
+              placeholder="https://api.example.com/data"
+              [value]="urlValue()"
+              (input)="urlValue.set($any($event.target).value)"
+              (keydown)="onKeydown($event)"
+              autofocus />
+            <p class="sm-note">
+              <i class="fa-solid fa-circle-info"></i>
+              JSON sent as <code>application/json</code> body.
+            </p>
+          </div>
+          <div class="sm-sub-foot">
+            <button class="sm-btn-sec" type="button" (click)="back()" [disabled]="isLoading()">Cancel</button>
+            <button class="sm-btn-pri" type="button" [disabled]="!urlValue().trim() || isLoading()" (click)="submitUrl()">
+              @if (isLoading()) { <i class="fa-solid fa-spinner fa-spin"></i> Sending… }
+              @else { <i class="fa-solid fa-paper-plane"></i> Send }
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- ── SAVE TO CLOUD ── -->
+      @if (panel() === 'cloud') {
+        <div class="sm-sub">
+          <div class="sm-sub-head">
+            <button class="sm-back" type="button" (click)="back()" [disabled]="isLoading()">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <span>Save to Cloud</span>
+          </div>
+          <div class="sm-sub-body">
+            <div class="sm-cloud-info">
+              <i class="fa-solid fa-cloud"></i>
+              Saves to <strong>JSONBin.io</strong> — free, no account needed.
+            </div>
+            <label>Master Key <span class="sm-opt">(optional — private bins)</span></label>
+            <input class="sm-input" type="text"
+              placeholder="Leave blank for public bin"
+              [value]="cloudKey()"
+              (input)="cloudKey.set($any($event.target).value)"
+              (keydown)="onKeydown($event)"
+              autofocus />
+            <p class="sm-note">
+              <i class="fa-solid fa-circle-info"></i>
+              A shareable URL appears in the status bar after upload.
+            </p>
+          </div>
+          <div class="sm-sub-foot">
+            <button class="sm-btn-sec" type="button" (click)="back()" [disabled]="isLoading()">Cancel</button>
+            <button class="sm-btn-pri" type="button" [disabled]="isLoading()" (click)="submitCloud()">
+              @if (isLoading()) { <i class="fa-solid fa-spinner fa-spin"></i> Uploading… }
+              @else { <i class="fa-solid fa-cloud-arrow-up"></i> Upload }
+            </button>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

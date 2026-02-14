@@ -1,0 +1,245 @@
+.filter-container {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-trigger {
+  &.active {
+    background: var(--primary, #0d6efd);
+    color: white;
+    border-color: var(--primary, #0d6efd);
+  }
+}
+
+.filter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 999;
+}
+
+.filter-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+  
+  h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main, #111827);
+  }
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: var(--text-muted, #6b7280);
+  font-size: 16px;
+  transition: color 0.2s;
+  
+  &:hover {
+    color: var(--text-main, #111827);
+  }
+}
+
+.filter-body {
+  padding: 16px;
+}
+
+.filter-group {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-main, #111827);
+    margin-bottom: 6px;
+  }
+}
+
+.filter-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background: var(--bg-main, #f9fafb);
+  color: var(--text-main, #111827);
+
+  &:focus {
+    border-color: var(--primary, #0d6efd);
+    background: var(--bg-card, #fff);
+  }
+
+  &::placeholder {
+    color: var(--text-light, #9ca3af);
+  }
+}
+
+.filter-options {
+  margin-bottom: 16px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-main, #111827);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  &.btn-primary {
+    background: var(--primary, #0d6efd);
+    color: white;
+
+    &:hover {
+      background: var(--primary-dark, #0b5ed7);
+    }
+  }
+
+  &.btn-secondary {
+    background: var(--bg-main, #f9fafb);
+    color: var(--text-main, #111827);
+    border: 1px solid var(--border-light, #e2e8f0);
+
+    &:hover {
+      background: var(--bg-card, #fff);
+      border-color: var(--primary, #0d6efd);
+    }
+  }
+}
+
+.filter-help {
+  font-size: 12px;
+  color: var(--text-muted, #6b7280);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+
+  i {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+}
+
+[data-theme="dark"] {
+  .filter-panel {
+    background: #0f172a;
+    border-color: #1e293b;
+  }
+
+  .filter-header {
+    border-color: #1e293b;
+
+    h4 {
+      color: #e5e7eb;
+    }
+  }
+
+  .close-btn {
+    color: #94a3b8;
+
+    &:hover {
+      color: #e5e7eb;
+    }
+  }
+
+  .filter-group label {
+    color: #e5e7eb;
+  }
+
+  .filter-input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #e5e7eb;
+
+    &:focus {
+      border-color: #38bdf8;
+      background: #0f172a;
+    }
+  }
+
+  .checkbox-label {
+    color: #e5e7eb;
+  }
+
+  .btn {
+    &.btn-primary {
+      background: #38bdf8;
+      color: #0f172a;
+
+      &:hover {
+        background: #0ea5e9;
+      }
+    }
+
+    &.btn-secondary {
+      background: #1e293b;
+      border-color: #334155;
+      color: #e5e7eb;
+
+      &:hover {
+        background: #0f172a;
+        border-color: #38bdf8;
+      }
+    }
+  }
+
+  .filter-help {
+    color: #94a3b8;
+  }
+
+  .filter-trigger.active {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+  }
+}

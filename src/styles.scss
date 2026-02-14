@@ -1,5 +1,69 @@
-/* Production-Ready Global Styles - Enhanced with Perfect Dark Mode */
+/* ═══════════════════════════════════════════════════════════════
+   PRODUCTION-READY GLOBAL STYLES - Dev JSON Tools
+   Enhanced with Accessibility & Performance Optimizations
+   ═══════════════════════════════════════════════════════════════ */
 
+/* ───────────────────────────────────────────────────────────────
+   ACCESSIBILITY: Skip Link (WCAG 2.4.1 Bypass Blocks - Level A)
+   ─────────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: #0d6efd;
+  color: #ffffff;
+  padding: 12px 24px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid #ffc107;
+  outline-offset: 2px;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ACCESSIBILITY: Enhanced Focus Styles (WCAG 2.4.7 - Level AA)
+   ─────────────────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ACCESSIBILITY: Reduced Motion (WCAG 2.3.3 - Level AAA)
+   Respects user preference for reduced animations
+   ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────
+   CSS VARIABLES: Theme System (Light & Dark Mode)
+   ─────────────────────────────────────────────────────────────── */
 :root {
   --primary: #0da2e7;
   --primary-soft: #e0f2fe;
@@ -9,12 +73,15 @@
   --bg-card: #ffffff;
   --textarea-bg-card: #f9fcff;
   --bg-section: #f1f5f9;
+  
+  /* ACCESSIBILITY: Improved contrast for text colors (WCAG AA 4.5:1) */
   --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
+  --text-muted: #475569;  /* Changed from #64748b for better contrast */
+  --text-light: #64748b;   /* Changed from #94a3b8 for better contrast */
+  
   --border-light: #e2e8f0;
   --border-medium: #cbd5e1;
-  --font-main: 'Inter', system-ui, sans-serif;
+  --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 [data-theme="dark"] {
@@ -26,11 +93,23 @@
   --bg-card: #1e293b;
   --textarea-bg-card: #1e293b;
   --bg-section: #0f172a;
-  --text-main: #e5e7eb;
-  --text-muted: #94a3b8;
-  --text-light: #64748b;
+  
+  /* ACCESSIBILITY: Improved contrast for dark mode */
+  --text-main: #f1f5f9;    /* Changed from #e5e7eb for better contrast */
+  --text-muted: #cbd5e1;   /* Changed from #94a3b8 for better contrast */
+  --text-light: #94a3b8;
+  
   --border-light: #334155;
   --border-medium: #475569;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   BASE STYLES
+   ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -38,14 +117,96 @@ body {
   font-family: var(--font-main);
   background: var(--bg-soft);
   color: var(--text-main);
-  transition: background 0.2s, color 0.2s;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* PERFORMANCE: Optimize for smooth transitions */
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-
+/* ───────────────────────────────────────────────────────────────
+   BUTTON STYLES
+   ─────────────────────────────────────────────────────────────── */
 .btn-primary {
   background: var(--primary);
 }
 
 .btn-primary:disabled {
   background: var(--primary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   PERFORMANCE: Will-change for animated elements
+   Hint to browser about upcoming animations
+   ─────────────────────────────────────────────────────────────── */
+.modal,
+.dropdown-menu,
+.tooltip,
+.popover {
+  will-change: transform, opacity;
+}
+
+.modal-backdrop {
+  will-change: opacity;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ACCESSIBILITY: Screen Reader Only Content
+   ─────────────────────────────────────────────────────────────── */
+.sr-only,
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   PERFORMANCE: Font Loading Optimization
+   ─────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Inter';
+  font-display: swap;
+  src: local('Inter');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-display: swap;
+  src: local('JetBrains Mono');
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ACCESSIBILITY: Improved link styles
+   ─────────────────────────────────────────────────────────────── */
+a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-skip-ink: auto;
+}
+
+a:hover,
+a:focus {
+  text-decoration-thickness: 2px;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   PERFORMANCE: Image optimization hints
+   ─────────────────────────────────────────────────────────────── */
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+img[loading="lazy"] {
+  content-visibility: auto;
 }

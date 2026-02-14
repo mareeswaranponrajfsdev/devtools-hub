@@ -1,0 +1,157 @@
+@if (isOpenSignal()) {
+  <!-- Outer wrapper with click handler -->
+  <div class="modal-overlay" (click)="onBackdropClick($event)">
+    
+    <!-- Inner wrapper that stops ALL propagation -->
+    <div class="modal-container">
+      
+      <!-- Modal Dialog -->
+      <div class="modal-dialog" #modalDialog>
+        
+        <!-- Header -->
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fa-solid fa-file-csv"></i>
+            CSV Export
+          </h5>
+          <button type="button" class="btn-close" (click)="closeModal()" title="Close">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+          
+          <!-- Error Alert -->
+          @if (errorMessage()) {
+            <div class="alert alert-danger">
+              <i class="fa-solid fa-exclamation-triangle"></i>
+              {{ errorMessage() }}
+            </div>
+          }
+          
+          <!-- File Name Input -->
+          <div class="form-group">
+            <label for="csv-filename">File Name</label>
+            <input 
+              type="text" 
+              id="csv-filename"
+              class="form-control" 
+              [value]="filename()"
+              (input)="updateFilename($any($event.target).value)"
+              placeholder="export" />
+            <small class="form-text">Extension .csv will be added automatically</small>
+          </div>
+
+          <!-- Export Options -->
+          <div class="options-section">
+            <h6 class="options-title">
+              <i class="fa-solid fa-sliders"></i>
+              Export Options
+            </h6>
+            
+            <div class="options-grid">
+              
+              <!-- Delimiter Dropdown -->
+              <div class="form-group">
+                <label for="csv-delimiter">Delimiter</label>
+                <select 
+                  id="csv-delimiter"
+                  class="form-control" 
+                  [value]="delimiter()"
+                  (change)="updateDelimiter($any($event.target).value)">
+                  <option value="comma">Comma (,)</option>
+                  <option value="semicolon">Semicolon (;)</option>
+                  <option value="tab">Tab</option>
+                  <option value="pipe">Pipe (|)</option>
+                </select>
+              </div>
+
+              <!-- Checkboxes -->
+              <div class="checkbox-group">
+                
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    [checked]="includeHeaders()"
+                    (change)="toggleHeaders($any($event.target).checked)" />
+                  <span>Include Headers</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    [checked]="flattenObjects()"
+                    (change)="toggleFlattenObjects($any($event.target).checked)" />
+                  <span>Flatten Nested Objects</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    [checked]="flattenArrays()"
+                    (change)="toggleFlattenArrays($any($event.target).checked)" />
+                  <span>Flatten Nested Arrays</span>
+                </label>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div class="preview-section">
+            <label class="preview-label">
+              <i class="fa-solid fa-eye"></i>
+              Preview
+              <span class="preview-info">
+                ({{ csvPreview().split('\n').length }} lines)
+              </span>
+            </label>
+            <textarea 
+              class="preview-textarea" 
+              [value]="csvPreview()" 
+              readonly 
+              spellcheck="false"
+              placeholder="CSV preview will appear here..."></textarea>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeModal()">
+            <i class="fa-solid fa-times"></i>
+            Close
+          </button>
+
+          <button 
+            type="button" 
+            class="btn btn-outline-primary" 
+            (click)="copyToClipboard()" 
+            [class.copied]="isCopied()"
+            [disabled]="csvPreview().startsWith('//')">
+            <i class="fa-solid" 
+               [class.fa-copy]="!isCopied()" 
+               [class.fa-check]="isCopied()"></i>
+            {{ isCopied() ? 'Copied!' : 'Copy to Clipboard' }}
+          </button>
+
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            (click)="downloadCsv()"
+            [disabled]="csvPreview().startsWith('//')">
+            <i class="fa-solid fa-download"></i>
+            Save to Disk
+          </button>
+          
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

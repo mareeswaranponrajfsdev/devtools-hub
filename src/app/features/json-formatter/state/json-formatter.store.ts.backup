@@ -38,7 +38,6 @@ export class JsonFormatterStore {
   isProcessing      = signal<boolean>(false);
   filterActive      = signal<boolean>(false);
   originalOutput    = signal<string>('');
-  originalJsonOutput = signal<string>('');  // Store JSON before conversion
   showTransform     = signal<boolean>(false);
   cloudBinUrl       = signal<string | null>(null);
 
@@ -112,12 +111,12 @@ export class JsonFormatterStore {
   /* ── FORMAT / MINIFY ── */
   format(): void {
     this.currentConversion.set(null);
-    try { this.output.set(this.engine.format(this.input(), this.formatterOptions())); this.error.set(null); this.originalJsonOutput.set(''); }
+    try { this.output.set(this.engine.format(this.input(), this.formatterOptions())); this.error.set(null); }
     catch (err: any) { this.handleError(err); }
   }
   minify(): void {
     this.currentConversion.set(null);
-    try { this.output.set(this.engine.minify(this.input())); this.error.set(null); this.originalJsonOutput.set(''); }
+    try { this.output.set(this.engine.minify(this.input())); this.error.set(null); }
     catch (err: any) { this.handleError(err); }
   }
 
@@ -199,41 +198,20 @@ export class JsonFormatterStore {
 
   /* ── CONVERSION ── */
   convert(format: ConversionFormat | null): void {
-    if (format === null) {
-      this.currentConversion.set(null);
-      // Restore original JSON
-      if (this.originalJsonOutput()) {
-        this.output.set(this.originalJsonOutput());
-        this.originalJsonOutput.set('');
-      }
-      return;
-    }
-
-    // Store original JSON before first conversion
-    if (!this.originalJsonOutput()) {
-      this.originalJsonOutput.set(this.output());
-    }
-
-    // Always convert from ORIGINAL JSON, not current output
-    const jsonToConvert = this.originalJsonOutput();
-    if (!jsonToConvert) {
-      this.error.set('✗ Please format JSON first');
-      return;
-    }
-
+    if (format === null) { this.currentConversion.set(null); this.format(); return; }
+    const output = this.output();
+    if (!output) { this.error.set('✗ Please format JSON first'); return; }
     try {
       let converted = '';
       switch (format) {
-        case 'xml':  converted = this.converter.toXml(jsonToConvert);  break;
-        case 'csv':  converted = this.converter.toCsv(jsonToConvert);  break;
-        case 'yaml': converted = this.converter.toYaml(jsonToConvert); break;
+        case 'xml':  converted = this.converter.toXml(output);  break;
+        case 'csv':  converted = this.converter.toCsv(output);  break;
+        case 'yaml': converted = this.converter.toYaml(output); break;
       }
       this.output.set(converted);
       this.currentConversion.set(format);
       this.error.set(null);
-    } catch (err: any) {
-      this.error.set(`✗ Conversion failed: ${err.message}`);
-    }
+    } catch (err: any) { this.error.set(`✗ Conversion failed: ${err.message}`); }
   }
 
   /* ── TRANSFORM (JMESPath) ── */
